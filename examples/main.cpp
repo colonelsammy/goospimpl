@@ -56,7 +56,7 @@ namespace {
 
 MOCK_CLASS_6(Turtle, penDown, forward, turn, penUp, flashLEDs, throwsException);
 
-TEST_CASE("mock/1", "Tests an empty mock object fails")
+TEST_CASE("mock/1", "Tests an empty mock object fails - this test is expected to fail!")
 {
     Mockery context;
     Turtle& turtle = context.mock<Turtle>();
@@ -123,3 +123,22 @@ TEST_CASE("mock/4", "Tests sequence and throws")
     t.sequence(turtle);
 }
 
+TEST_CASE("mock/5", "Tests exactly/of")
+{
+    Mockery context;
+    States pen = context.states("pen").startsAs("up");
+    Turtle& turtle = context.mock<Turtle>();
+
+
+    context.checking( (Expectations(),
+        allowing(turtle, &Turtle::flashLEDs),
+        exactly(1).of(turtle, &Turtle::penDown), then(pen.is("down")),
+        oneOf(turtle, &Turtle::forward, with(equal(10))), when(pen.is("down")),
+        oneOf(turtle, &Turtle::turn, with(equal(90, 0.001))), when(pen.is("down")),
+        oneOf(turtle, &Turtle::forward, 10), when(pen.is("down")),
+        oneOf(turtle, &Turtle::penUp), then(pen.is("up"))
+        ) );
+
+    TurtleDriver t;
+    t.run(turtle);
+}

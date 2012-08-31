@@ -68,9 +68,9 @@ namespace goospimpl
         }
     };
 
-    struct state_change
+    struct StateChange
     {
-        state_change(const StateMachineHolder& sm, const std::string& s, bool n, bool c)
+        StateChange(const StateMachineHolder& sm, const std::string& s, bool n, bool c)
             : machine(sm), expected(s), negate(n), check(c), ok(false)
         {}
         bool isSatisfied() const
@@ -124,19 +124,19 @@ namespace goospimpl
             rhs.swap(*this);
             return *this;
         }
-        void add_state_change(const StateMachineHolder& sm, const std::string& expected, bool negate)
+        void addStateChange(const StateMachineHolder& sm, const std::string& expected, bool negate)
         {
-            states.push_back(state_change(sm, expected, negate, false));
+            states.push_back(StateChange(sm, expected, negate, false));
         }
-        void add_state_check(const StateMachineHolder& sm, const std::string& state, bool negate)
+        void addStateCheck(const StateMachineHolder& sm, const std::string& state, bool negate)
         {
-            states.push_back(state_change(sm, state, negate, true));
+            states.push_back(StateChange(sm, state, negate, true));
         }
         bool process(const std::string& name)
         {
             if( states.empty() ) return true;
             bool failed(false);
-            for( std::vector<state_change>::iterator iter = states.begin(); iter != states.end(); ++iter )
+            for( std::vector<StateChange>::iterator iter = states.begin(); iter != states.end(); ++iter )
             {
                 failed = !iter->process(name);
             }
@@ -145,7 +145,7 @@ namespace goospimpl
         bool isSatisfied() const
         {
             bool failed(false);
-            for( std::vector<state_change>::const_iterator iter = states.begin(); iter != states.end(); ++iter )
+            for( std::vector<StateChange>::const_iterator iter = states.begin(); iter != states.end(); ++iter )
             {
                 failed |= !iter->isSatisfied();
             }
@@ -157,7 +157,7 @@ namespace goospimpl
             std::swap(states, rhs.states);
         }
 
-        std::vector<state_change> states;
+        std::vector<StateChange> states;
     };
 
     inline bool operator==(const StateMachineHolder& lhs, const std::string& rhs)

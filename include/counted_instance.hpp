@@ -6,11 +6,6 @@
 #ifndef GOOS_PIMPL_COUNTED_INSTANCE_HPP
 #define GOOS_PIMPL_COUNTED_INSTANCE_HPP
 
-namespace boost
-{
-    class any;
-}
-
 #include <typeinfo>
 #include <algorithm>
 

@@ -16,14 +16,14 @@
 namespace goospimpl
 {
     class FunctionHolder;
-    struct action;
+    struct Action;
 
     struct Expectation : CountedContent<CountedInstance>
     {
-        virtual bool parameters_match(const std::string& name, const FunctionHolder& fn, const std::vector<ValueHolder>& r, ValueHolder& rv) = 0;
+        virtual bool parametersMatch(const std::string& name, const FunctionHolder& fn, const std::vector<ValueHolder>& r, ValueHolder& rv) = 0;
         virtual bool isSatisfied() const = 0;
         virtual bool isComplete() const = 0;
-        virtual void add_return_value_action(action* a) = 0;
+        virtual void addReturnValueAction(Action* a) = 0;
     };
 
     class ExpectationHolder : public CountedHolder<ExpectationHolder, Expectation>
@@ -42,12 +42,12 @@ namespace goospimpl
             rhs.swap(*this);
             return *this;
         }
-        void add_state_change(const StateMachineHolder& sm, const std::string& s, bool negate) {states.add_state_change(sm, s, negate);}
-        void add_state_check(const StateMachineHolder& sm, const std::string& s, bool negate) {states.add_state_check(sm, s, negate);}
-        bool parameters_match(const std::string& name, const FunctionHolder& fn, const std::vector<ValueHolder>& r, ValueHolder& rv)
+        void addStateChange(const StateMachineHolder& sm, const std::string& s, bool negate) {states.addStateChange(sm, s, negate);}
+        void addStateCheck(const StateMachineHolder& sm, const std::string& s, bool negate) {states.addStateCheck(sm, s, negate);}
+        bool parametersMatch(const std::string& name, const FunctionHolder& fn, const std::vector<ValueHolder>& r, ValueHolder& rv)
         {
             assert(content);
-            return (content->parameters_match(name, fn, r, rv) && states.process(name) );
+            return (content->parametersMatch(name, fn, r, rv) && states.process(name) );
         }
         bool isSatisfied() const
         {
@@ -59,10 +59,10 @@ namespace goospimpl
             assert(content);
             return content->isComplete();
         }
-        void add_return_value_action(action* a)
+        void addReturnValueAction(Action* a)
         {
             assert(content);
-            content->add_return_value_action(a);
+            content->addReturnValueAction(a);
         }
     private:
         void swap(ExpectationHolder& rhs)

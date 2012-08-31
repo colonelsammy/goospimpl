@@ -6,53 +6,78 @@
 #ifndef GOOS_PIMPL_ALLOWING_HPP
 #define GOOS_PIMPL_ALLOWING_HPP
 
-#include "expectation.hpp"
-#include "expected_function_count_at_least.hpp"
-#include "matcher.hpp"
-#include "with.hpp"
-#include "function_call.hpp"
+#include "at_least.hpp"
 
 namespace goospimpl
 {
-    struct allowing
+    struct allowing : atLeast
     {
         template <typename T, typename F>
         allowing(const T& obj, F fn)
+            : atLeast(0)
         {
-            std::vector<MatcherHolder> params;
-            FunctionHolder t(new detail::FunctionBinder<T, F>(&obj, fn));
-            ExpectationHolder tmp(new ExpectedFunctionCountAtLeast(t, params, 0));
-            expectation = tmp;
+            of(obj, fn);
         }
         template <typename T, typename F, typename P1>
         allowing(const T& obj, F fn, const P1& v1)
+            : atLeast(0)
         {
-            std::vector<MatcherHolder> params;
-            typedef typename member_function_traits<F>::arg1_type arg1_nonref;
-            addParam(params, static_cast<arg1_nonref>(v1));
-            FunctionHolder t(new detail::FunctionBinder<T, F>(&obj, fn));
-            ExpectationHolder tmp(new ExpectedFunctionCountAtLeast(t, params, 0));
-            expectation = tmp;
+            of(obj, fn, v1);
         }
         template <typename T, typename F, typename P1, typename P2>
         allowing(const T& obj, F fn, const P1& v1, const P2& v2)
+            : atLeast(0)
         {
-            std::vector<MatcherHolder> params;
-            typedef typename member_function_traits<F>::arg1_type arg1_nonref;
-            addParam(params, static_cast<arg1_nonref>(v1));
-            typedef typename member_function_traits<F>::arg2_type arg2_nonref;
-            addParam(params, static_cast<arg2_nonref>(v2));
-            FunctionHolder t(new detail::FunctionBinder<T, F>(&obj, fn));
-            ExpectationHolder tmp(new ExpectedFunctionCountAtLeast(t, params, 0));
-            expectation = tmp;
+            of(obj, fn, v1, v2);
         }
-        template<typename T>
-        void addParam(std::vector<MatcherHolder>& params, const T& v)
+        template <typename T, typename F, typename P1, typename P2, typename P3>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3)
+            : atLeast(0)
         {
-            MatcherHolder vx( new EqualsMatcher<T>(v));
-            params.push_back(vx);
+            of(obj, fn, v1, v2, v3);
         }
-        ExpectationHolder expectation;
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4);
+        }
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4, typename P5>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4, const P5& v5)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4, v5);
+        }
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4, const P5& v5, const P6& v6)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4, v5, v6);
+        }
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4, const P5& v5, const P6& v6, const P7& v7)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4, v5, v6, v7);
+        }
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4, const P5& v5, const P6& v6, const P7& v7, const P8& v8)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4, v5, v6, v7, v8);
+        }
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4, const P5& v5, const P6& v6, const P7& v7, const P8& v8, const P9& v9)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+        }
+        template <typename T, typename F, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename P10>
+        allowing(const T& obj, F fn, const P1& v1, const P2& v2, const P3& v3, const P4& v4, const P5& v5, const P6& v6, const P7& v7, const P8& v8, const P9& v9, const P10& v10)
+            : atLeast(0)
+        {
+            of(obj, fn, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10);
+        }
     };
 }
 

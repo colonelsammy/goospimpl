@@ -18,6 +18,7 @@
 #include "states.hpp"
 #include "will.hpp"
 #include "allowing.hpp"
+#include "at_least.hpp"
 #include "one_of.hpp"
 #include "exactly.hpp"
 #include "with.hpp"

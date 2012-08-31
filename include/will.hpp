@@ -23,9 +23,9 @@ namespace goospimpl
     {
         template <typename T>
         explicit throw_exception(const T& e)
-            : act(new throw_exception_action(e))
+            : act(new ThrowExceptionAction(e))
         {}
-        action* act;
+        Action* act;
     };
 
     class will
@@ -37,7 +37,7 @@ namespace goospimpl
         explicit will(const throw_exception& v)
             : act(v.act)
         {}
-        action* act;
+        Action* act;
     private:
         will();
     };

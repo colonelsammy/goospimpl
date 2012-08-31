@@ -15,8 +15,8 @@ namespace goospimpl
 
     struct MatcherContent : CountedType
     {
-        virtual void describe_to(goospimpl::Description& desc) const = 0;
-        virtual void describe_mismatch(const ValueHolder& v, goospimpl::Description& mismatch_desc) const = 0;
+        virtual void describe_to(Description& desc) const = 0;
+        virtual void describe_mismatch(const ValueHolder& v, Description& mismatch_desc) const = 0;
         virtual bool operator()(const ValueHolder& v) const = 0;
     };
 
@@ -33,12 +33,12 @@ namespace goospimpl
             return *this;
         }
 
-        void describe_to(goospimpl::Description& desc) const
+        void describe_to(Description& desc) const
         {
             assert(content);
             content->describe_to(desc);
         }
-        void describe_mismatch(const ValueHolder& v, goospimpl::Description& mismatch_desc) const
+        void describe_mismatch(const ValueHolder& v, Description& mismatch_desc) const
         {
             assert(content);
             content->describe_mismatch(v, mismatch_desc);

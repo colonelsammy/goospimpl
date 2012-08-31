@@ -78,6 +78,39 @@
   <ItemGroup>
     <ClCompile Include="..\..\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\action.hpp" />
+    <ClInclude Include="..\..\..\include\allowing.hpp" />
+    <ClInclude Include="..\..\..\include\any_value_of_any_type_matcher.hpp" />
+    <ClInclude Include="..\..\..\include\any_value_of_type_matcher.hpp" />
+    <ClInclude Include="..\..\..\include\at_least.hpp" />
+    <ClInclude Include="..\..\..\include\between_matcher.hpp" />
+    <ClInclude Include="..\..\..\include\catch_matcher_wrapper.hpp" />
+    <ClInclude Include="..\..\..\include\counted_instance.hpp" />
+    <ClInclude Include="..\..\..\include\description.hpp" />
+    <ClInclude Include="..\..\..\include\equals_matcher.hpp" />
+    <ClInclude Include="..\..\..\include\equals_with_epsilon_matcher.hpp" />
+    <ClInclude Include="..\..\..\include\exactly.hpp" />
+    <ClInclude Include="..\..\..\include\expectation.hpp" />
+    <ClInclude Include="..\..\..\include\expectations.hpp" />
+    <ClInclude Include="..\..\..\include\expected_function_count_at_least.hpp" />
+    <ClInclude Include="..\..\..\include\expected_function_count_equals.hpp" />
+    <ClInclude Include="..\..\..\include\function_call.hpp" />
+    <ClInclude Include="..\..\..\include\goospimpl.hpp" />
+    <ClInclude Include="..\..\..\include\matcher.hpp" />
+    <ClInclude Include="..\..\..\include\member_function_traits.hpp" />
+    <ClInclude Include="..\..\..\include\mockery.hpp" />
+    <ClInclude Include="..\..\..\include\mock_class.hpp" />
+    <ClInclude Include="..\..\..\include\one_of.hpp" />
+    <ClInclude Include="..\..\..\include\sequence.hpp" />
+    <ClInclude Include="..\..\..\include\states.hpp" />
+    <ClInclude Include="..\..\..\include\state_machine.hpp" />
+    <ClInclude Include="..\..\..\include\then.hpp" />
+    <ClInclude Include="..\..\..\include\value_holder.hpp" />
+    <ClInclude Include="..\..\..\include\when.hpp" />
+    <ClInclude Include="..\..\..\include\will.hpp" />
+    <ClInclude Include="..\..\..\include\with.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

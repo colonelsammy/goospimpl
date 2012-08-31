@@ -8,6 +8,7 @@
 
 #include "sequence.hpp"
 #include "allowing.hpp"
+#include "at_least.hpp"
 #include "one_of.hpp"
 #include "exactly.hpp"
 #include "when.hpp"
@@ -31,6 +32,11 @@ namespace goospimpl
             expectations.push_back(rhs.expectation);
             return *this;
         }
+        Expectations& operator,(const atLeast& rhs)
+        {
+            expectations.push_back(rhs.expectation);
+            return *this;
+        }
         Expectations& operator,(const allowing& rhs)
         {
             expectations.push_back(rhs.expectation);
@@ -40,9 +46,9 @@ namespace goospimpl
         {
             if( !expectations.empty() )
             {
-                expectations.back().add_state_check(rhs.value.seq, rhs.value.expectedValue(), false);
+                expectations.back().addStateCheck(rhs.value.seq, rhs.value.expectedValue(), false);
                 rhs.value.next();
-                expectations.back().add_state_change(rhs.value.seq, rhs.value.expectedValue(), false);
+                expectations.back().addStateChange(rhs.value.seq, rhs.value.expectedValue(), false);
             }
             return *this;
         }
@@ -50,7 +56,7 @@ namespace goospimpl
         {
             if( !expectations.empty() )
             {
-                expectations.back().add_state_change(rhs.seq, rhs.value, rhs.negate);
+                expectations.back().addStateChange(rhs.seq, rhs.value, rhs.negate);
             }
             return *this;
         }
@@ -58,7 +64,7 @@ namespace goospimpl
         {
             if( !expectations.empty() )
             {
-                expectations.back().add_state_check(rhs.seq, rhs.value, rhs.negate);
+                expectations.back().addStateCheck(rhs.seq, rhs.value, rhs.negate);
             }
             return *this;
         }
@@ -66,7 +72,7 @@ namespace goospimpl
         {
             if( !expectations.empty() )
             {
-                expectations.back().add_return_value_action(rhs.act);
+                expectations.back().addReturnValueAction(rhs.act);
             }
             return *this;
         }
@@ -86,7 +92,7 @@ namespace goospimpl
             {
                 if( iter->isComplete() )
                     continue;
-                matched = iter->parameters_match(name, fn, parameters, rv);
+                matched = iter->parametersMatch(name, fn, parameters, rv);
                 if( matched )
                 {
                     unmatched.push_back(name);

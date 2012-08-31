@@ -28,7 +28,7 @@ namespace goospimpl
             : fn_holder(rhs.fn_holder), params(rhs.params), expectedCount(rhs.expectedCount), call_count(rhs.call_count), act(rhs.act? rhs.act->clone() :NULL)
         {
         }
-        virtual bool parameters_match(const std::string& name, const FunctionHolder& fn, const std::vector<ValueHolder>& r, ValueHolder& rv)
+        virtual bool parametersMatch(const std::string& name, const FunctionHolder& fn, const std::vector<ValueHolder>& r, ValueHolder& rv)
         {
             bool match(false);
             if( fn_holder.compare(fn) )
@@ -87,7 +87,7 @@ namespace goospimpl
         {
             return isSatisfied();
         }
-        virtual void add_return_value_action(action* a)
+        virtual void addReturnValueAction(Action* a)
         {
             assert(act == NULL);
             act = a;
@@ -97,7 +97,7 @@ namespace goospimpl
         std::vector<MatcherHolder> params;
         size_t expectedCount;
         size_t call_count;
-        action* act;
+        Action* act;
     };
 }
 

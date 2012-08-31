@@ -16,13 +16,10 @@
 namespace goospimpl
 {
     template<typename Matcher>
-    struct with_matcher
+    struct WithMatcher
     {
         typedef typename Matcher::MatchParameterType MatchParameterType;
-        /*with_matcher()
-            : m()
-        {}*/
-        with_matcher(const MatchParameterType& v)
+        WithMatcher(const MatchParameterType& v)
             : m_value(v)
         {}
         MatchParameterType m_value;
@@ -35,7 +32,7 @@ namespace goospimpl
     };
 
     template<>
-    struct with_matcher<AnyValueOfAnyTypeMatcher>
+    struct WithMatcher<AnyValueOfAnyTypeMatcher>
     {
         //typedef AnyValueOfAnyTypeMatcher::MatchParameterType MatchParameterType;
         template <typename U>
@@ -46,7 +43,7 @@ namespace goospimpl
     };
 
     template<typename T>
-    struct with_matcher<AnyValueOfTypeMatcher<T> >
+    struct WithMatcher<AnyValueOfTypeMatcher<T> >
     {
         typedef typename AnyValueOfTypeMatcher<T>::MatchParameterType MatchParameterType;
         template <typename U>
@@ -57,42 +54,42 @@ namespace goospimpl
     };
 
     template <typename T>
-    with_matcher<EqualsMatcher<T> > equal(const T& v)
+    WithMatcher<EqualsMatcher<T> > equal(const T& v)
     {
         typedef typename EqualsMatcher<T>::MatchParameterType MatchParameterType;
         MatchParameterType packed_value(v);
-        return with_matcher<EqualsMatcher<T> >(packed_value);
+        return WithMatcher<EqualsMatcher<T> >(packed_value);
     }
 
     template <typename T, typename U>
-    with_matcher<EqualsWithEpsilonMatcher<T,U> > equal(const T& v, const U& epsilon)
+    WithMatcher<EqualsWithEpsilonMatcher<T,U> > equal(const T& v, const U& epsilon)
     {
         typedef typename EqualsWithEpsilonMatcher<T,U>::MatchParameterType MatchParameterType;
         MatchParameterType packed_value(v, epsilon);
-        return with_matcher<EqualsWithEpsilonMatcher<T, U> >(packed_value);
+        return WithMatcher<EqualsWithEpsilonMatcher<T, U> >(packed_value);
     }
 
     template <typename T>
-    with_matcher<BetweenMatcher<T> > between(const T& l, const T& u)
+    WithMatcher<BetweenMatcher<T> > between(const T& l, const T& u)
     {
         typedef typename BetweenMatcher<T>::MatchParameterType MatchParameterType;
         MatchParameterType packed_value(l, u);
-        return with_matcher<BetweenMatcher<T> >(packed_value);
+        return WithMatcher<BetweenMatcher<T> >(packed_value);
     }
 
     template <typename T>
-    with_matcher<AnyValueOfTypeMatcher<T> > any()
+    WithMatcher<AnyValueOfTypeMatcher<T> > any()
     {
-        return with_matcher<AnyValueOfTypeMatcher<T> >();
+        return WithMatcher<AnyValueOfTypeMatcher<T> >();
     }
 
-    inline with_matcher<AnyValueOfAnyTypeMatcher> anything()
+    inline WithMatcher<AnyValueOfAnyTypeMatcher> anything()
     {
-        return with_matcher<AnyValueOfAnyTypeMatcher>();
+        return WithMatcher<AnyValueOfAnyTypeMatcher>();
     }
 
     template<typename Matcher>
-    with_matcher<Matcher> with(const with_matcher<Matcher>& value)
+    WithMatcher<Matcher> with(const WithMatcher<Matcher>& value)
     {
         return value;
     }

@@ -13,5 +13,9 @@ CatchSelfTest.xcscheme
 Breakpoints.xcbkptlist
 UpgradeLog.XML
 *.sdf
+*.opensdf
+Visual Lint
 *.lnt
+*.o
+example.exe
 ipch

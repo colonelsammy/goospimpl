@@ -30,25 +30,6 @@ namespace goospimpl
         ValueType m_value;
     };
 
-    /*template <>
-    class ValueContent<const char*> : CountedContent<CountedType>
-    {
-        friend class ValueHolder;
-    public:
-        typedef std::string ValueType;
-        ValueContent(const char*& v)
-            : m_value(v)
-        {}
-        virtual const std::type_info & type() const
-        {
-            return typeid(std::string);
-        }
-    private:
-        ValueContent& operator=(ValueContent); // not implemented
-
-        std::string m_value;
-    };*/
-
     class ValueHolder : public CountedHolder<ValueHolder, CountedType>
     {
         class BadHolderCast : public std::bad_cast

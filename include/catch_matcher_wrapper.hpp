@@ -66,7 +66,11 @@ namespace goospimpl
 
         T expected;
     };
+    
+    typedef CatchMatcher<Catch::Matchers::Impl::StdString::Equals> CatchEqualsMatcher;
+    typedef CatchMatcher<Catch::Matchers::Impl::StdString::Contains> ContainsMatcher;
     typedef CatchMatcher<Catch::Matchers::Impl::StdString::StartsWith> StartsWithMatcher;
+    typedef CatchMatcher<Catch::Matchers::Impl::StdString::EndsWith> EndsWithMatcher;
 }
 
 #endif

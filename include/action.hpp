@@ -9,23 +9,21 @@
 #include "value_holder.hpp"
 #include <cassert>
 
-//#include <boost/any.hpp>
-
 namespace goospimpl
 {
-    struct action
+    struct Action
     {
-        virtual ~action() {}
-        virtual action* clone() const = 0;
+        virtual ~Action() {}
+        virtual Action* clone() const = 0;
         virtual ValueHolder invoke() const = 0;
     };
 
-    struct ReturnValueAction : public action
+    struct ReturnValueAction : public Action
     {
         ReturnValueAction(const ValueHolder& a)
             : value(a)
         {}
-        virtual action* clone() const
+        virtual Action* clone() const
         {
             return new ReturnValueAction(value);
         }
@@ -36,23 +34,23 @@ namespace goospimpl
         ValueHolder value;
     };
 
-    struct throw_exception_action : public action
+    struct ThrowExceptionAction : public Action
     {
-        struct invoke_exception
+        struct InvokeException
         {
-            virtual ~invoke_exception() {}
-            virtual invoke_exception* clone() const = 0;
+            virtual ~InvokeException() {}
+            virtual InvokeException* clone() const = 0;
             virtual ValueHolder invoke() const = 0;
         };
         template<typename T>
-        struct invoke_typed_exception : public invoke_exception
+        struct InvokeTypedException : public InvokeException
         {
-            invoke_typed_exception(const T& e)
+            InvokeTypedException(const T& e)
                 : exc(e)
             {}
-            virtual invoke_exception* clone() const
+            virtual InvokeException* clone() const
             {
-                return new invoke_typed_exception(exc);
+                return new InvokeTypedException(exc);
             }
             virtual ValueHolder invoke() const
             {
@@ -60,26 +58,26 @@ namespace goospimpl
             }
             T exc;
         };
-        throw_exception_action()
+        ThrowExceptionAction()
             : content(NULL)
         {}
-        throw_exception_action(const throw_exception_action& rhs)
+        ThrowExceptionAction(const ThrowExceptionAction& rhs)
             : content(rhs.content ? rhs.content->clone() : NULL )
         {}
         template <typename T>
-        explicit throw_exception_action(const T& e)
-            : content(new invoke_typed_exception<T>(e))
+        explicit ThrowExceptionAction(const T& e)
+            : content(new InvokeTypedException<T>(e))
         {}
-        virtual action* clone() const
+        virtual Action* clone() const
         {
-            return new throw_exception_action(*this);
+            return new ThrowExceptionAction(*this);
         }
         virtual ValueHolder invoke() const
         {
             assert(content);
             return content->invoke();
         }
-        invoke_exception* content;
+        InvokeException* content;
     };
 }
 
