@@ -30,7 +30,7 @@ namespace goospimpl
         ValueType m_value;
     };
 
-    class ValueHolder : public CountedHolder<ValueHolder, CountedType>
+    class ValueHolder : public CountedHolder<CountedType>
     {
         class BadHolderCast : public std::bad_cast
         {

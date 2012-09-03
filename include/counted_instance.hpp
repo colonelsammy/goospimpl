@@ -11,16 +11,23 @@
 
 namespace goospimpl
 {
-    struct CountedInstance
+    class CountedInstance
     {
-        virtual ~CountedInstance() = 0;
+    public:
         virtual unsigned addRef() = 0;
         virtual unsigned release() = 0;
         virtual unsigned refCount() const = 0;
+    protected:
+        virtual ~CountedInstance() = 0;
+        CountedInstance() {}
+    private:
+        CountedInstance(const CountedInstance&); // non copyable
+        CountedInstance& operator=(const CountedInstance&); // non assignable
     };
 
-    struct CountedType : CountedInstance
+    class CountedType : public CountedInstance
     {
+    public:
         virtual const std::type_info & type() const = 0;
     };
 
@@ -59,7 +66,7 @@ namespace goospimpl
         unsigned m_refs;
     };
 
-    template <typename Derived, typename ContentHolder>
+    template <typename ContentHolder>
     class CountedHolder
     {
     public:

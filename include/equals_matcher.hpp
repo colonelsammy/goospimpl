@@ -65,6 +65,40 @@ namespace goospimpl
 
         ValueType expected;
     };
+
+    template <typename T>
+    class EqualsMatcher2
+    {
+    public:
+        typedef T ValueType;
+        //typedef T MatchParameterType;
+        EqualsMatcher2()
+            : expected()
+        {}
+        explicit EqualsMatcher2(const ValueType & value)
+            : expected(value)
+        {
+        }
+        /*bool operator()(const ValueType& v) const
+        {
+            return matches(v);
+        }*/
+        bool matches(const ValueType& v) const
+        {
+            return (expected == v);
+        }
+        void describe_to(goospimpl::Description& desc) const
+        {
+            desc.appendText("value ").appendValue(expected);
+        }
+        void describe_mismatch(const ValueType& v, goospimpl::Description& mismatch_desc) const
+        {
+            mismatch_desc.appendText("was ").appendValue(v);
+        }
+    private:
+        ValueType expected;
+    };
+
 }
 
 #endif

@@ -26,7 +26,7 @@ namespace goospimpl
         virtual void addReturnValueAction(Action* a) = 0;
     };
 
-    class ExpectationHolder : public CountedHolder<ExpectationHolder, Expectation>
+    class ExpectationHolder : public CountedHolder<Expectation>
     {
     public:
         ExpectationHolder()

@@ -33,7 +33,7 @@ namespace goospimpl
         std::string m_expected_state;
     };
 
-    class StateMachineHolder : public CountedHolder<StateMachineHolder, StateMachine>
+    class StateMachineHolder : public CountedHolder<StateMachine>
     {
     public:
         StateMachineHolder()

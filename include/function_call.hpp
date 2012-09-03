@@ -70,7 +70,7 @@ namespace goospimpl
         };
     } // detail
 
-    class FunctionHolder : public CountedHolder<FunctionHolder, detail::FunctionContent>
+    class FunctionHolder : public CountedHolder<detail::FunctionContent>
     {
     public:
         explicit FunctionHolder(detail::FunctionContent* p)

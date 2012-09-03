@@ -371,7 +371,7 @@ namespace goospimpl
         }
     };
 
-    class MockHolder : public CountedHolder<MockHolder, CountedType>
+    class MockHolder : public CountedHolder<CountedType>
     {
     public:
         explicit MockHolder(CountedType* p)

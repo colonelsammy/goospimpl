@@ -17,5 +17,8 @@ UpgradeLog.XML
 Visual Lint
 *.lnt
 *.o
-example.exe
+examples/example
+examples/example.exe
+tests/tests
+tests/tests.exe
 ipch

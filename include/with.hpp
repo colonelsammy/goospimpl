@@ -34,7 +34,6 @@ namespace goospimpl
     template<>
     struct WithMatcher<AnyValueOfAnyTypeMatcher>
     {
-        //typedef AnyValueOfAnyTypeMatcher::MatchParameterType MatchParameterType;
         template <typename U>
         MatcherContent* clone_with_new_type() const
         {
@@ -93,6 +92,39 @@ namespace goospimpl
     {
         return value;
     }
+
+    template <typename Matcher>
+    struct WithParameterType
+    {
+        typedef typename Matcher::ValueType MatchParameterType;
+        WithParameterType(const MatchParameterType& v)
+            : m_value(v)
+        {}
+        template <typename U>
+        MatcherHolder2 convert() const
+        {
+            return MatcherHolder2::create<Matcher, U>(static_cast<U>(m_value));
+        }
+        MatchParameterType m_value;
+    };
+
+    template<typename Matcher>
+    struct WithMatcher2
+    {
+        typedef typename WithParameterType<Matcher>::MatchParameterType MatchParameterType;
+        WithMatcher2(const MatchParameterType& v)
+            : m_params(v)
+        {}
+        WithParameterType<Matcher> m_params;
+        //MatchParameterType m_value;
+        template <typename U>
+        MatcherHolder2 matcher() const
+        {
+            //Matcher m(m_value);
+            return m_params.convert<U>();
+        }
+    };
+
 }
 
 #endif
