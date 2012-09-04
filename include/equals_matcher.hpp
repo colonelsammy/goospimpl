@@ -69,8 +69,8 @@ namespace goospimpl
     template <typename T>
     class EqualsMatcher2
     {
-    public:
         typedef T ValueType;
+    public:
         //typedef T MatchParameterType;
         EqualsMatcher2()
             : expected()

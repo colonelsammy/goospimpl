@@ -70,6 +70,35 @@ namespace goospimpl
         ValueType expected;
         EpsilonType epsilon;
     };
+
+    template <typename T, typename EpsilonType>
+    class EqualsWithEpsilonMatcher2
+    {
+        typedef T ValueType;
+    public:
+        EqualsWithEpsilonMatcher2()
+            : expected(), epsilon(0)
+        {}
+        explicit EqualsWithEpsilonMatcher2(const ValueType & value, const EpsilonType& e)
+            : expected(value), epsilon(e)
+        {
+        }
+        bool matches(const ValueType& v) const
+        {
+            return (expected <= (v + epsilon) && expected >= (v - epsilon));
+        }
+        void describe_to(goospimpl::Description& desc) const
+        {
+            desc.appendText("value ").appendValue(expected);
+        }
+        void describe_mismatch(const ValueType& v, goospimpl::Description& mismatch_desc) const
+        {
+            mismatch_desc.appendText("was ").appendValue(v).appendText(" (+-").appendValue(epsilon).appendText(")");
+        }
+    private:
+        ValueType expected;
+        EpsilonType epsilon;
+    };
 }
 
 #endif

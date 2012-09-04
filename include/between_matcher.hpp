@@ -70,6 +70,34 @@ namespace goospimpl
         ValueType lower;
         ValueType upper;
     };
+
+    template <typename LowerType, typename UpperType>
+    class BetweenMatcher2
+    {
+    public:
+        BetweenMatcher2()
+            : lower(), upper(0)
+        {}
+        explicit BetweenMatcher2(const LowerType & l, const UpperType& u)
+            : lower(l), upper(u)
+        {
+        }
+        bool matches(const LowerType& v) const
+        {
+            return (v >= lower && v <= upper);
+        }
+        void describe_to(goospimpl::Description& desc) const
+        {
+            desc.appendText("value between ").appendValue(lower).appendText(" and ").appendValue(upper);
+        }
+        void describe_mismatch(const LowerType& v, goospimpl::Description& mismatch_desc) const
+        {
+            mismatch_desc.appendText("was ").appendValue(v);
+        }
+    private:
+        LowerType lower;
+        UpperType upper;
+    };
 }
 
 #endif

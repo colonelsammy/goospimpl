@@ -17,11 +17,11 @@ TEST_CASE("CloneableMatcher/1","")
 {
     using goospimpl::EqualsMatcher2;
     using goospimpl::CloneableMatcher;
-    using goospimpl::CloneableMatcherType;
+    using goospimpl::SingleValueMatcherType;
     using goospimpl::ValueHolder;
 
-    std::auto_ptr<CloneableMatcher> matcher(CloneableMatcherType<double, EqualsMatcher2 >::create());
-    ValueHolder value(0.0);
+    std::auto_ptr<CloneableMatcher> matcher(SingleValueMatcherType<int, EqualsMatcher2 >::create(0));
+    ValueHolder value(0);
     REQUIRE(matcher->matches(value));
 }
 
@@ -29,10 +29,10 @@ TEST_CASE("CloneableMatcher/2","")
 {
     using goospimpl::EqualsMatcher2;
     using goospimpl::CloneableMatcher;
-    using goospimpl::CloneableMatcherType;
+    using goospimpl::SingleValueMatcherType;
     using goospimpl::ValueHolder;
 
-    std::auto_ptr<CloneableMatcher> matcher(CloneableMatcherType<double, EqualsMatcher2 >::create(1.234));
+    std::auto_ptr<CloneableMatcher> matcher(SingleValueMatcherType<double, EqualsMatcher2 >::create(1.234));
     ValueHolder value(3.142);
     REQUIRE(!matcher->matches(value));
 
@@ -52,8 +52,8 @@ TEST_CASE("MatcherHolder/1","")
     using goospimpl::MatcherHolder2;
     using goospimpl::ValueHolder;
 
-    MatcherHolder2 matcher = MatcherHolder2::create<EqualsMatcher2, double>();
-    ValueHolder value(0.0);
+    MatcherHolder2 matcher = MatcherHolder2::create<EqualsMatcher2, int>(0);
+    ValueHolder value(0);
     REQUIRE(matcher.matches(value));
 }
 

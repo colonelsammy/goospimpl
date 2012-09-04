@@ -104,28 +104,28 @@ namespace goospimpl
         }
     };
 
-    template <typename T, template <typename> class Matcher>
-    class CloneableMatcherType : public CloneableMatcher
+    template <typename T1, template <typename> class Matcher>
+    class SingleValueMatcherType : public CloneableMatcher
     {
-        typedef T ValueType;
+        typedef T1 ValueType;
     public:
-        static CloneableMatcher* create()
+        /*static CloneableMatcher* create()
         {
-            return new CloneableMatcherType();
-        }
+            return new SingleValueMatcherType();
+        }*/
         static CloneableMatcher* create(const ValueType& value)
         {
-            return new CloneableMatcherType(value);
+            return new SingleValueMatcherType(value);
         }
     private:
-        CloneableMatcherType()
+        SingleValueMatcherType()
             : m_matcher()
         {}
-        CloneableMatcherType(const CloneableMatcherType& rhs)
+        SingleValueMatcherType(const SingleValueMatcherType& rhs)
             : m_matcher(rhs.m_matcher)
         {
         }
-        explicit CloneableMatcherType(const ValueType & value)
+        explicit SingleValueMatcherType(const ValueType & value)
             : m_matcher(value)
         {
         }
@@ -135,7 +135,7 @@ namespace goospimpl
         }*/
         virtual CloneableMatcher* clone() const
         {
-            return new CloneableMatcherType(*this);
+            return new SingleValueMatcherType(*this);
         }
         virtual void describe_to(goospimpl::Description& desc) const
         {
@@ -166,6 +166,68 @@ namespace goospimpl
         Matcher<ValueType> m_matcher;
     };
 
+    template <typename T, typename U, template <typename, typename> class Matcher>
+    class MultipleValueMatcherType : public CloneableMatcher
+    {
+        typedef T ValueType;
+    public:
+        /*static CloneableMatcher* create()
+        {
+            return new MultipleValueMatcherType();
+        }*/
+        static CloneableMatcher* create(const ValueType& v1, const U& v2)
+        {
+            return new MultipleValueMatcherType(v1, v2);
+        }
+    private:
+        MultipleValueMatcherType()
+            : m_matcher()
+        {}
+        MultipleValueMatcherType(const MultipleValueMatcherType& rhs)
+            : m_matcher(rhs.m_matcher)
+        {
+        }
+        explicit MultipleValueMatcherType(const ValueType & v1, const U& v2)
+            : m_matcher(v1, v2)
+        {
+        }
+        /*virtual const std::type_info & type() const
+        {
+            return typeid(ValueType);
+        }*/
+        virtual CloneableMatcher* clone() const
+        {
+            return new MultipleValueMatcherType(*this);
+        }
+        virtual void describe_to(goospimpl::Description& desc) const
+        {
+            m_matcher.describe_to(desc);
+        }
+        virtual void describe_mismatch(const ValueHolder& v, goospimpl::Description& mismatch_desc) const
+        {
+            if( v.type() == typeid(ValueType) )
+            {
+                m_matcher.describe_mismatch(v.value<ValueType>(), mismatch_desc);
+            }
+            else
+            {
+                mismatch_desc.appendText("was of incompatible type '").appendText(v.type().name()).appendText("'");
+            }
+        }
+        virtual bool matches(const ValueHolder& v) const
+        {
+            if( v.type() == typeid(ValueType) )
+            {
+                const ValueType& parameter = v.value<ValueType>();
+                match_forwarder<has_matcher_function<Matcher<ValueType,U>, ValueType>::value> mf;
+                return mf.matches(m_matcher, parameter);
+            }
+            return false;
+        }
+    private:
+        Matcher<ValueType, U> m_matcher;
+    };
+
     class MatcherHolder2
     {
     public:
@@ -173,15 +235,20 @@ namespace goospimpl
         {
             delete content;
         }
+        /*template <template <typename> class Matcher, typename T>
+        static MatcherHolder2 create()
+        {
+            return MatcherHolder2(SingleValueMatcherType<T, Matcher>::create());
+        }*/
         template <template <typename> class Matcher, typename T>
         static MatcherHolder2 create(const T& value)
         {
-            return MatcherHolder2(CloneableMatcherType<T, Matcher>::create(value));
+            return MatcherHolder2(SingleValueMatcherType<T, Matcher>::create(value));
         }
-        template <template <typename> class Matcher, typename T>
-        static MatcherHolder2 create()
+        template <template <typename, typename> class Matcher, typename T1, typename T2>
+        static MatcherHolder2 create(const T1& v1, const T2& v2)
         {
-            return MatcherHolder2(CloneableMatcherType<T, Matcher>::create());
+            return MatcherHolder2(MultipleValueMatcherType<T1, T2, Matcher>::create(v1, v2));
         }
         MatcherHolder2(const MatcherHolder2& rhs)
             : content(rhs.content ? rhs.content->clone() : NULL)

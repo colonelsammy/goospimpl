@@ -93,37 +93,46 @@ namespace goospimpl
         return value;
     }
 
-    template <typename Matcher>
+    template <template <typename> class Matcher, typename T>
     struct WithParameterType
     {
-        typedef typename Matcher::ValueType MatchParameterType;
+        typedef typename Matcher<T>::ValueType MatchParameterType;
         WithParameterType(const MatchParameterType& v)
             : m_value(v)
         {}
         template <typename U>
         MatcherHolder2 convert() const
         {
-            return MatcherHolder2::create<Matcher, U>(static_cast<U>(m_value));
+            //return MatcherHolder2::convertParam<Matcher, U>(static_cast<U>(m_value));
+            return MatcherHolder2();
         }
         MatchParameterType m_value;
     };
 
-    template<typename Matcher>
+    template<template <typename> class Matcher>
     struct WithMatcher2
     {
-        typedef typename WithParameterType<Matcher>::MatchParameterType MatchParameterType;
-        WithMatcher2(const MatchParameterType& v)
-            : m_params(v)
+        //typedef typename WithParameterType<Matcher>::MatchParameterType MatchParameterType;
+        template <typename T>
+        WithMatcher2(const Matcher<T>& v)
+            //: m_params(v)
         {}
-        WithParameterType<Matcher> m_params;
+        //WithParameterType<Matcher> m_params;
         //MatchParameterType m_value;
         template <typename U>
         MatcherHolder2 matcher() const
         {
             //Matcher m(m_value);
-            return m_params.convert<U>();
+            //return m_params.convert<U>();
+            return MatcherHolder2();
         }
     };
+
+    template<template <typename> class Matcher>
+    WithMatcher2<Matcher> with2(const WithMatcher2<Matcher>& value)
+    {
+        return value;
+    }
 
 }
 
