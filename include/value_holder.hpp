@@ -47,6 +47,10 @@ namespace goospimpl
         ValueHolder(const T& v)
             : CountedHolder(new ValueContent<T>(v) )
         {}
+        template <typename T>
+        ValueHolder(T* v)
+            : CountedHolder(new ValueContent<T*>(v) )
+        {}
         explicit ValueHolder(const char* v)
             : CountedHolder(new ValueContent<std::string>(v) )
         {}

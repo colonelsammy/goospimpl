@@ -49,6 +49,11 @@ struct Params
     {
         params.push_back(goospimpl::MatcherHolder2::create<Matcher, Convert>(v.m_value));
     }
+    template<>
+    void addDeducedParameter<const char*>(std::vector<goospimpl::MatcherHolder2>& params, const SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, const char*>& v)
+    {
+        params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, std::string>(v.m_value));
+    }
     template<typename Convert, template <typename, typename> class Matcher, typename T1, typename T2>
     void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const MultipleValueDeducedMatcher<Matcher, T1, T2>& v)
     {
@@ -68,10 +73,40 @@ SingleValueDeducedMatcher<goospimpl::EqualsMatcher2,U> equal(const U& v)
     return SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, U>(v);
 }
 
+#ifdef XXX
+#if __cplusplus >= 201103
+#define STATIC_ASSERT_PTR_NOT_SUPPORTED(b) static_assert(b,"Pointer types cannot be compared for equality - use pointer<> template to compare pointers")
+#else
+
+template <bool b>
+struct pointer_equality_not_supported;
+
+template <>
+struct pointer_equality_not_supported<true>
+{};
+
+#define STATIC_ASSERT_PTR_NOT_SUPPORTED(b) pointer_equality_not_supported<b> ptr_not_supported;
+#endif
+#endif
+
+
+template <typename U>
+SingleValueDeducedMatcher<goospimpl::EqualsMatcher2,U*> equal(U* v)
+{
+    //STATIC_ASSERT_PTR_NOT_SUPPORTED(false);
+    return SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, U*>(v);
+}
+
 template <typename T1, typename T2>
 MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1,T2> between(const T1& lower, const T2& upper)
 {
     return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1,T2>(lower, upper);
+}
+
+template <typename T1, typename T2>
+MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1*,T2*> between(T1* lower, T2* upper)
+{
+    return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1*,T2*>(lower, upper);
 }
 
 template <typename DeducedMatcher>
@@ -140,4 +175,33 @@ TEST_CASE("With/1","")
     REQUIRE(paramsVector[0].matches(dvalue));
     REQUIRE(!paramsVector[0].matches(ivalue));
     paramsVector.clear();
+}
+
+TEST_CASE("strings","")
+{
+    using goospimpl::MatcherHolder2;
+    using goospimpl::ValueHolder;
+    std::vector<goospimpl::MatcherHolder2> paramsVector;
+
+    Params p;
+    p.addDeducedParameter<const char*>(paramsVector, equal("The quick brown fox"));
+    REQUIRE(paramsVector[0].matches(ValueHolder("The quick brown fox")));
+}
+
+TEST_CASE("arrays","")
+{
+    int values[] = {0,1,2};
+    equal(values);
+
+    using goospimpl::MatcherHolder2;
+    using goospimpl::ValueHolder;
+    std::vector<goospimpl::MatcherHolder2> paramsVector;
+
+    Params p;
+    p.addDeducedParameter<int*>(paramsVector, equal(values));
+    REQUIRE(paramsVector[0].matches(ValueHolder(values)));
+    paramsVector.clear();
+
+    p.addDeducedParameter<int*>(paramsVector, between(values, values + 2));
+    REQUIRE(paramsVector[0].matches(ValueHolder(values + 1)));
 }
