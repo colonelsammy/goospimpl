@@ -11,7 +11,7 @@
 
 namespace goospimpl
 {
-    template <typename T, typename EpsilonType>
+    /*template <typename T, typename EpsilonType>
     struct EqualsWithEpsilonMatcher : public CountedContent<MatcherContent>
     {
     public:
@@ -69,7 +69,7 @@ namespace goospimpl
 
         ValueType expected;
         EpsilonType epsilon;
-    };
+    };*/
 
     template <typename T, typename EpsilonType>
     class EqualsWithEpsilonMatcher2

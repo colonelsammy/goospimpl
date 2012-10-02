@@ -37,7 +37,7 @@ TEST_CASE("CloneableMatcher/2","")
     REQUIRE(!matcher->matches(value));
 
     using goospimpl::Description;
-    std::auto_ptr<CloneableMatcher> matcher2(matcher->clone());
+    std::auto_ptr<const CloneableMatcher> matcher2(matcher->clone());
     Description d;
     matcher2->describe_to(d);
     REQUIRE(printToString(d) == "value \"1.234\"");

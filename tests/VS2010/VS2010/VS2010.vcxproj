@@ -80,6 +80,7 @@
     <ClCompile Include="..\..\counted_object_tests.cpp" />
     <ClCompile Include="..\..\equals_matcher_tests.cpp" />
     <ClCompile Include="..\..\main.cpp" />
+    <ClCompile Include="..\..\value_holder_tests.cpp" />
     <ClCompile Include="..\..\with_tests.cpp" />
   </ItemGroup>
   <ItemGroup>

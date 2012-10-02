@@ -1,8 +1,8 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "goospimpl.hpp"
+//#include "goospimpl.hpp"
 
-using namespace goospimpl;
+//using namespace goospimpl;
 
 namespace {
     // Interface to mock
@@ -54,6 +54,7 @@ namespace {
     
 }
 
+#ifdef XXX
 MOCK_CLASS_6(Turtle, penDown, forward, turn, penUp, flashLEDs, throwsException);
 
 TEST_CASE("mock/1", "Tests an empty mock object fails - this test is expected to fail!")
@@ -142,3 +143,4 @@ TEST_CASE("mock/5", "Tests exactly/of")
     TurtleDriver t;
     t.run(turtle);
 }
+#endif

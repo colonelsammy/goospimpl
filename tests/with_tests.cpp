@@ -56,6 +56,34 @@ struct Params
     }
 };
 
+struct A
+{
+    A(int v)
+        : m_value(v)
+    {}
+    operator double() const {return m_value;}
+    int m_value;
+};
+
+bool operator==(const A& lhs, const A& rhs)
+{
+    return lhs.m_value == rhs.m_value;
+}
+
+struct B
+{
+    B(int v)
+        : m_value(v)
+    {}
+    operator int() const {return m_value;}
+    int m_value;
+};
+
+bool operator==(const B& lhs, const B& rhs)
+{
+    return lhs.m_value == rhs.m_value;
+}
+
 template <typename U, typename EpsilonType>
 MultipleValueDeducedMatcher<goospimpl::EqualsWithEpsilonMatcher2,U,EpsilonType> equal(const U& v, const EpsilonType& e)
 {
@@ -93,6 +121,26 @@ TEST_CASE("With/1","")
     ValueHolder ivalue(3);
     REQUIRE(paramsVector[0].matches(dvalue));
     REQUIRE(!paramsVector[0].matches(ivalue));
+    paramsVector.clear();
+
+    A a(3);
+    p.addDeducedParameter<double>(paramsVector, a);
+    REQUIRE(paramsVector.size() == 1);
+    REQUIRE(paramsVector[0].matches(dvalue));
+    REQUIRE(!paramsVector[0].matches(ivalue));
+    paramsVector.clear();
+
+    B b(3);
+    p.addDeducedParameter<double>(paramsVector, b);
+    REQUIRE(paramsVector.size() == 1);
+    REQUIRE(paramsVector[0].matches(dvalue));
+    REQUIRE(!paramsVector[0].matches(ivalue));
+    paramsVector.clear();
+
+    p.addDeducedParameter<int>(paramsVector, b);
+    REQUIRE(paramsVector.size() == 1);
+    REQUIRE(!paramsVector[0].matches(dvalue));
+    REQUIRE(paramsVector[0].matches(ivalue));
     paramsVector.clear();
 
     p.addDeducedParameter<int>(paramsVector, 3);

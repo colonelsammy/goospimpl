@@ -11,7 +11,7 @@
 
 namespace goospimpl
 {
-    template <typename T>
+    /*template <typename T>
     struct BetweenMatcher : public CountedContent<MatcherContent>
     {
     public:
@@ -69,7 +69,7 @@ namespace goospimpl
 
         ValueType lower;
         ValueType upper;
-    };
+    };*/
 
     template <typename LowerType, typename UpperType>
     class BetweenMatcher2

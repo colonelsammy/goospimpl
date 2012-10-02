@@ -15,7 +15,7 @@
 
 namespace goospimpl
 {
-    template<typename Matcher>
+    /*template<typename Matcher>
     struct WithMatcher
     {
         typedef typename Matcher::MatchParameterType MatchParameterType;
@@ -132,7 +132,7 @@ namespace goospimpl
     WithMatcher2<Matcher> with2(const WithMatcher2<Matcher>& value)
     {
         return value;
-    }
+    }*/
 
 }
 

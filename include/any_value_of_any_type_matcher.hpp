@@ -12,7 +12,7 @@
 
 namespace goospimpl
 {
-    struct AnyValueOfAnyTypeMatcher : public CountedContent<MatcherContent>
+    /*struct AnyValueOfAnyTypeMatcher : public CountedContent<MatcherContent>
     {
     public:
         typedef void ValueType;
@@ -35,7 +35,7 @@ namespace goospimpl
         {
             return true;
         }
-    };
+    };*/
 }
 
 #endif

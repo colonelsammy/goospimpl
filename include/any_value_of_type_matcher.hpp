@@ -11,7 +11,7 @@
 
 namespace goospimpl
 {
-    template <typename T>
+    /*template <typename T>
     struct AnyValueOfTypeMatcher : public CountedContent<MatcherContent>
     {
     public:
@@ -40,7 +40,7 @@ namespace goospimpl
         {
             return new AnyValueOfTypeMatcher<U>();
         }
-    };
+    };*/
 }
 
 #endif

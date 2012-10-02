@@ -15,7 +15,7 @@ namespace goospimpl
 {
     class Description;
 
-    struct MatcherContent : CountedType
+    /*struct MatcherContent : CountedType
     {
         virtual void describe_to(Description& desc) const = 0;
         virtual void describe_mismatch(const ValueHolder& v, Description& mismatch_desc) const = 0;
@@ -57,7 +57,7 @@ namespace goospimpl
         }
     private:
         MatcherHolder();
-    };
+    };*/
 
     struct CloneableMatcher
     {
@@ -105,7 +105,7 @@ namespace goospimpl
     };
 
     template <typename T1, template <typename> class Matcher>
-    class SingleValueMatcherType : public CloneableMatcher
+    class SingleValueMatcherType : CloneableMatcher
     {
         typedef T1 ValueType;
     public:
@@ -167,7 +167,7 @@ namespace goospimpl
     };
 
     template <typename T, typename U, template <typename, typename> class Matcher>
-    class MultipleValueMatcherType : public CloneableMatcher
+    class MultipleValueMatcherType : CloneableMatcher
     {
         typedef T ValueType;
     public:
@@ -287,7 +287,7 @@ namespace goospimpl
             std::swap(content, rhs.content);
         }
 
-        CloneableMatcher* content;
+        const CloneableMatcher* content;
     };
 }
 

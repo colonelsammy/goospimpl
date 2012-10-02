@@ -11,7 +11,7 @@
 
 namespace goospimpl
 {
-    template <typename T>
+    /*template <typename T>
     struct EqualsMatcher : public CountedContent<MatcherContent>
     {
     public:
@@ -64,7 +64,7 @@ namespace goospimpl
         EqualsMatcher operator=(EqualsMatcher);
 
         ValueType expected;
-    };
+    };*/
 
     template <typename T>
     class EqualsMatcher2
