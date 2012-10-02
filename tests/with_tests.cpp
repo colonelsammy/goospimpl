@@ -246,10 +246,47 @@ TEST_CASE("arrays","")
     std::vector<goospimpl::MatcherHolder2> paramsVector;
 
     Params p;
-    p.addDeducedParameter<int*>(paramsVector, equal(values));
+    p.addDeducedParameter<int * const>(paramsVector, equal(values));
     REQUIRE(paramsVector[0].matches(ValueHolder(values)));
     paramsVector.clear();
 
-    p.addDeducedParameter<int*>(paramsVector, between(values, values + 2));
+    p.addDeducedParameter<int* const>(paramsVector, between(values, values + 2));
     REQUIRE(paramsVector[0].matches(ValueHolder(values + 1)));
 }
+
+int findPositiveValues(int* v, int lower, int upper, int value)
+{
+    int count = 0;
+    while( lower <= upper )
+    {
+        if( v[lower] == value )
+        {
+            ++count;
+        }
+        else if( v[lower] > value )
+        {
+            break;
+        }
+        ++lower;
+    }
+    return count;
+}
+
+int absDistinct(int* v, int sz, int value)
+{
+    int lower = 0;
+    int upper = sz - 1;
+    int count = findPositiveValues(v,lower, upper,(value < 0 ? -value : value));
+    return count;
+}
+
+TEST_CASE("absDistinct","")
+{
+    int values[] = {-10,-5,0,4,5,9};
+    int count = absDistinct(values, sizeof(values)/ sizeof(int), -5);
+    count = absDistinct(values, sizeof(values)/ sizeof(int), 9);
+    count = absDistinct(values, sizeof(values)/ sizeof(int), 10);
+    count = absDistinct(values, sizeof(values)/ sizeof(int), 11);
+    count = absDistinct(values, sizeof(values)/ sizeof(int), 3);
+}
+
