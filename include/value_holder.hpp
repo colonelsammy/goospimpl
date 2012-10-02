@@ -86,6 +86,17 @@ namespace goospimpl
         ValueHolder(const T& v)
             : m_content(new TypeErasedValue<T>(v) )
         {}
+        template <typename T>
+        ValueHolder(T* v)
+            : m_content(new TypeErasedValue<T*>(v) )
+        {}
+        /*template <typename T>
+        ValueHolder(const T* v)
+            : m_content(new TypeErasedValue<const T*>(v) )
+        {}*/
+        explicit ValueHolder(const char* v)
+            : m_content(new TypeErasedValue<std::string>(v) )
+        {}
         /*explicit ValueHolder(const char* v)
             : m_content(new TypeErasedValue<std::string>(v) )
         {}*/
