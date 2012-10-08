@@ -7,6 +7,7 @@
 #define GOOS_PIMPL_VALUE_HOLDER_HPP
 
 //#include <string>
+#include <typeinfo>
 
 namespace goospimpl
 {
@@ -21,6 +22,7 @@ namespace goospimpl
     class TypeErasedValue : CloneableType
     {
         friend class ValueHolder;
+        //template <class U> friend const U& convertTypeErasedType(const CloneableType* content);
     public:
         typedef T ValueType;
         TypeErasedValue(const T& v)
@@ -39,10 +41,11 @@ namespace goospimpl
         const ValueType m_value;
     };
 
-    template <typename T>
+    /*template <typename T>
     class TypeErasedValue<T*> : CloneableType
     {
         friend class ValueHolder;
+        template <class U> friend const U& convertTypeErasedType(const CloneableType* content);
     public:
         typedef T ValueType;
         TypeErasedValue(const T* v)
@@ -59,10 +62,46 @@ namespace goospimpl
     private:
         TypeErasedValue& operator=(TypeErasedValue); // not implemented
         const ValueType* m_value;
+    };*/
+#if __cplusplus >= 201103
+#define STATIC_ASSERT_VALUE_HOLDER_CONVERSION_TO_CHAR_ARRAY_NOT_SUPPORTED(b) static_assert(b,"Cannot convert from const char*: ValueHolder should always hold std::string")
+#else
+
+template<class T> void ignore( const T& ) { }
+
+template <typename T>
+struct conversion_from_char_array_not_supported {};
+
+template <>
+struct conversion_from_char_array_not_supported<const char*>;
+
+#define STATIC_ASSERT_VALUE_HOLDER_CONVERSION_TO_CHAR_ARRAY_NOT_SUPPORTED( t ) goospimpl::conversion_from_char_array_not_supported<t> conversion_from_char_array_not_supported_obj; \
+    ignore(conversion_from_char_array_not_supported_obj);
+
+#endif
+
+#if __cplusplus >= 201103
+    typedef std::remove_reference remove_reference;
+#else
+    template <typename T>
+    struct remove_reference
+    {
+        typedef T type;
     };
+
+    template <typename T>
+    struct remove_reference<T&>
+    {
+        typedef T type;
+    };
+#endif
+
+    //template <typename T>
+    //const T& convertTypeErasedType(const CloneableType* content);
 
     class ValueHolder
     {
+    public:
         class BadHolderCast : public std::bad_cast
         {
         public:
@@ -110,13 +149,15 @@ namespace goospimpl
         }
 
         template <typename T>
-        const T& value() const
+        const T value() const
         {
+            STATIC_ASSERT_VALUE_HOLDER_CONVERSION_TO_CHAR_ARRAY_NOT_SUPPORTED(T);
             if( !m_content || (m_content->type() != typeid(T)) )
             {
                 throw BadHolderCast();
             }
-            return static_cast<const TypeErasedValue<T>*>(m_content)->m_value;
+            return static_cast<const TypeErasedValue<typename remove_reference<T>::type>*>(m_content)->m_value;
+            //return convertTypeErasedType<T>(m_content);
         }
     private:
         ValueHolder& swapContent(ValueHolder & rhs)
@@ -128,6 +169,35 @@ namespace goospimpl
         const CloneableType* m_content;
     };
 
+    //typedef const char* pChar;
+    //template <>
+    //const pChar& ValueHolder::value<const char*>() const;
+    /*template <typename T>
+    const T& convertTypeErasedType(const CloneableType* content)
+    {
+        if( !content || (content->type() != typeid(T)) )
+        {
+            throw ValueHolder::BadHolderCast();
+        }
+        return static_cast<const TypeErasedValue<const T>*>(content)->m_value;
+    }
+
+    typedef const char* pChar;
+    template <>
+    inline const pChar& convertTypeErasedType<const char*>(const CloneableType* content)
+    {
+        if( !content || ((content->type() != typeid(const char*)) && (content->type() != typeid(std::string))) )
+        {
+            throw ValueHolder::BadHolderCast();
+        }
+        if(content->type() == typeid(std::string))
+        {
+            //const std::string & v = static_cast<const TypeErasedValue<const std::string>*>(content)->m_value;
+            //const char* p = v.c_str();
+            return static_cast<const TypeErasedValue<const std::string>*>(content)->m_value.c_str();
+        }
+        return static_cast<const TypeErasedValue<const char*>*>(content)->m_value;
+    }*/
     /*template <typename T>
     class ValueContent : CountedContent<CountedType>
     {

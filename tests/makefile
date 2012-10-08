@@ -2,10 +2,12 @@ CC=g++
 CFLAGS=-c -Wall -I../../Catch/include -I../include
 LDFLAGS=
 SOURCES=main.cpp \
+    counted_object_tests.cpp \
     equals_matcher_tests.cpp \
     matcher_tests.cpp \
-    with_tests.cpp \
-    counted_object_tests.cpp
+    value_holder_tests.cpp \
+    with_tests.cpp
+    
 
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=tests

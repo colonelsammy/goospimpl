@@ -49,7 +49,7 @@ TEST_CASE("ValueHolder/Copies underlying object","copy initialisation")
     REQUIRE(TestCounted::m_instanceCount == 0);
 }
 
-TEST_CASE("ValueHolder/Assignment copies underlying object","assignment")
+void functionWithTemporaries()
 {
     using goospimpl::ValueHolder;
 
@@ -57,22 +57,29 @@ TEST_CASE("ValueHolder/Assignment copies underlying object","assignment")
     ValueHolder* pv1 = new ValueHolder((TestCounted(1)));
     ValueHolder* pv2 = new ValueHolder();
 
-    const TestCounted& v0 = pv->value<TestCounted>();
+    const TestCounted& v0 = pv->value<TestCounted>();   // creates a temporary, bound to the const ref
     REQUIRE(v0.m_value == 2);
-    const TestCounted& v1 = pv1->value<TestCounted>();
-    REQUIRE(v0.m_value == 2);
+    const TestCounted& v1 = pv1->value<TestCounted>();   // creates a temporary, bound to the const ref
+    REQUIRE(v1.m_value == 1);
     REQUIRE_THROWS(pv2->value<TestCounted>());
     *pv2 = *pv1;
-    REQUIRE(TestCounted::m_instanceCount == 3);
+    REQUIRE(TestCounted::m_instanceCount == 5);
     REQUIRE(pv2->value<TestCounted>().m_value == 1);
     *pv2 = *pv;
-    REQUIRE(TestCounted::m_instanceCount == 3);
+    REQUIRE(TestCounted::m_instanceCount == 5);
     REQUIRE(pv2->value<TestCounted>().m_value == 2);
     delete pv;
-    REQUIRE(TestCounted::m_instanceCount == 2);
+    REQUIRE(TestCounted::m_instanceCount == 4);
     delete pv2;
-    REQUIRE(TestCounted::m_instanceCount == 1);
+    REQUIRE(TestCounted::m_instanceCount == 3);
     delete pv1;
+    REQUIRE(TestCounted::m_instanceCount == 2);
+    // temporaries wil be released here...
+}
+
+TEST_CASE("ValueHolder/Assignment copies underlying object","assignment")
+{
+    functionWithTemporaries();
     REQUIRE(TestCounted::m_instanceCount == 0);
 }
 
@@ -105,9 +112,102 @@ TEST_CASE("ValueHolder/Check string handling","strings of different types")
     const char* testString = "fred";
 
     ValueHolder* pv = new ValueHolder(testString);
-    std::string t = pv->value<const char*>();
+    std::string t = pv->value<std::string>();
     REQUIRE(t == "fred");
-    const char* ps = pv->value<const char*>();
-    REQUIRE(ps == testString);
+    // won't compile
+    //const char* ps = pv->value<const char*>();
 }
 
+namespace UnitTest
+{
+    class TestValueObject
+    {
+    public:
+        TestValueObject()
+            : m_str("fred"), m_value(27)
+        {}
+        bool matches(const TestValueObject& rhs) const
+        {
+            return (m_str == rhs.m_str &&
+                m_value == rhs.m_value);
+        }
+        // Requirements: must be copy constructable
+        TestValueObject(const TestValueObject& rhs)
+            : m_str(rhs.m_str), m_value(rhs.m_value)
+        {
+        }
+        // Requirements: must be (output) streamable
+        void print(std::ostream& os) const
+        {
+            os << m_str << ", " << m_value;
+        }
+#if __cplusplus >= 201103
+        // Requirements: must be moveable
+        TestValueObject(TestValueObject&& rhs)
+            : m_str(std::move(rhs.m_str)), m_value(std::move(rhs.m_value))
+        {
+        }
+#endif
+    private:
+        // not assignable
+        TestValueObject& operator=(const TestValueObject& rhs);
+#if __cplusplus >= 201103
+        TestValueObject& operator=(TestValueObject&& rhs);
+#endif
+
+        std::string m_str;
+        int m_value;
+    };
+
+        // Requirements: must be comparable for equals
+    bool operator==(const TestValueObject& lhs, const TestValueObject& rhs)
+    {
+        return lhs.matches(rhs);
+    }
+    // Requirements: must be streamable
+    std::ostream& operator<<(std::ostream& os, const TestValueObject& rhs)
+    {
+        rhs.print(os);
+        return os;
+    }
+}
+
+template <typename T>
+void addReference(const UnitTest::TestValueObject& v, T t)
+{
+    using goospimpl::ValueHolder;
+    ValueHolder* pv = new ValueHolder(v);
+    T vt = pv->value<T>();
+    REQUIRE(vt == t);
+}
+
+template <typename T>
+T createRef()
+{
+    T t;
+    return t;
+}
+
+#if __cplusplus >= 201103
+template <typename T>
+void addRvalueReference(const UnitTest::TestValueObject&& v, T t)
+{
+    using goospimpl::ValueHolder;
+    ValueHolder* pv = new ValueHolder(v);
+    T vt = pv->value<T>();
+    REQUIRE(vt == t);
+}
+#endif
+
+TEST_CASE("ValueHolder/Check object handling","check that objects of different types can be constructed")
+{
+    UnitTest::TestValueObject t;
+    addReference<UnitTest::TestValueObject>(t, t);
+    addReference<const UnitTest::TestValueObject>(t, t);
+    addReference<const UnitTest::TestValueObject&>(t, t);
+#if __cplusplus >= 201103
+    addRvalueReference<UnitTest::TestValueObject>(createRef<UnitTest::TestValueObject>(), t);
+    addRvalueReference<const UnitTest::TestValueObject>(createRef<UnitTest::TestValueObject>(), t);
+    addRvalueReference<const UnitTest::TestValueObject&>(createRef<UnitTest::TestValueObject>(), t);
+#endif
+}

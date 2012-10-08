@@ -87,12 +87,6 @@ namespace goospimpl
         return WithMatcher<AnyValueOfAnyTypeMatcher>();
     }
 
-    template<typename Matcher>
-    WithMatcher<Matcher> with(const WithMatcher<Matcher>& value)
-    {
-        return value;
-    }
-
     template <template <typename> class Matcher, typename T>
     struct WithParameterType
     {
@@ -133,6 +127,64 @@ namespace goospimpl
     {
         return value;
     }*/
+
+    template <template <typename> class Matcher, typename T>
+    struct SingleValueDeducedMatcher
+    {
+        SingleValueDeducedMatcher(const T& v)
+            : m_value(v)
+        {}
+        SingleValueDeducedMatcher()
+            : m_value()
+        {}
+        const T m_value;
+    };
+
+    template <template <typename, typename> class Matcher, typename T1, typename T2>
+    struct MultipleValueDeducedMatcher
+    {
+        MultipleValueDeducedMatcher(const T1& v1, const T2& v2)
+            : m_v1(v1), m_v2(v2)
+        {}
+        const T1 m_v1;
+        const T2 m_v2;
+    };
+
+    template <typename U, typename EpsilonType>
+    MultipleValueDeducedMatcher<goospimpl::EqualsWithEpsilonMatcher2,U,EpsilonType> equal(const U& v, const EpsilonType& e)
+    {
+        return MultipleValueDeducedMatcher<EqualsWithEpsilonMatcher2, U,EpsilonType>(v, e);
+    }
+
+    template <typename U>
+    SingleValueDeducedMatcher<EqualsMatcher2,U> equal(const U& v)
+    {
+        return SingleValueDeducedMatcher<EqualsMatcher2, U>(v);
+    }
+
+    template <typename U>
+    SingleValueDeducedMatcher<goospimpl::EqualsMatcher2,U*> equal(U* v)
+    {
+        return SingleValueDeducedMatcher<EqualsMatcher2, U*>(v);
+    }
+
+    template <typename T1, typename T2>
+    MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1,T2> between(const T1& lower, const T2& upper)
+    {
+        return MultipleValueDeducedMatcher<BetweenMatcher2,T1,T2>(lower, upper);
+    }
+
+    template <typename T1, typename T2>
+    MultipleValueDeducedMatcher<BetweenMatcher2,T1*,T2*> between(T1* lower, T2* upper)
+    {
+        return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1*,T2*>(lower, upper);
+    }
+
+    template <typename DeducedMatcher>
+    DeducedMatcher with(const DeducedMatcher& m)
+    {
+        return m;
+    }
 
 }
 

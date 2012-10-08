@@ -163,7 +163,7 @@ namespace goospimpl
             return false;
         }
     private:
-        Matcher<ValueType> m_matcher;
+        const Matcher<ValueType> m_matcher;
     };
 
     template <typename T, typename U, template <typename, typename> class Matcher>
@@ -225,7 +225,7 @@ namespace goospimpl
             return false;
         }
     private:
-        Matcher<ValueType, U> m_matcher;
+        const Matcher<ValueType, U> m_matcher;
     };
 
     class MatcherHolder2
@@ -241,12 +241,12 @@ namespace goospimpl
             return MatcherHolder2(SingleValueMatcherType<T, Matcher>::create());
         }*/
         template <template <typename> class Matcher, typename T>
-        static MatcherHolder2 create(const T& value)
+        static MatcherHolder2 create(T value)
         {
             return MatcherHolder2(SingleValueMatcherType<T, Matcher>::create(value));
         }
         template <template <typename, typename> class Matcher, typename T1, typename T2>
-        static MatcherHolder2 create(const T1& v1, const T2& v2)
+        static MatcherHolder2 create(T1 v1, T2 v2)
         {
             return MatcherHolder2(MultipleValueMatcherType<T1, T2, Matcher>::create(v1, v2));
         }

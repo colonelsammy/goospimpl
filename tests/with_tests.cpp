@@ -15,51 +15,30 @@ namespace
     }
 }
 
-template <template <typename> class Matcher, typename T>
-struct SingleValueDeducedMatcher
-{
-    SingleValueDeducedMatcher(const T& v)
-        : m_value(v)
-    {}
-    SingleValueDeducedMatcher()
-        : m_value()
-    {}
-    T m_value;
-};
-
-template <template <typename, typename> class Matcher, typename T1, typename T2>
-struct MultipleValueDeducedMatcher
-{
-    MultipleValueDeducedMatcher(const T1& v1, const T2& v2)
-        : m_v1(v1), m_v2(v2)
-    {}
-    T1 m_v1;
-    T2 m_v2;
-};
-
 struct Params
 {
     template<typename Convert, typename T>
     void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const T& v)
     {
-        params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, Convert>(v));
+        params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, typename goospimpl::remove_reference<Convert>::type>(v));
     }
     template<typename Convert, template <typename> class Matcher, typename U>
-    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const SingleValueDeducedMatcher<Matcher, U>& v)
+    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const goospimpl::SingleValueDeducedMatcher<Matcher, U>& v)
     {
-        params.push_back(goospimpl::MatcherHolder2::create<Matcher, Convert>(v.m_value));
-    }
-    template<>
-    void addDeducedParameter<const char*>(std::vector<goospimpl::MatcherHolder2>& params, const SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, const char*>& v)
-    {
-        params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, std::string>(v.m_value));
+        params.push_back(goospimpl::MatcherHolder2::create<Matcher, typename goospimpl::remove_reference<Convert>::type>(v.m_value));
     }
     template<typename Convert, template <typename, typename> class Matcher, typename T1, typename T2>
-    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const MultipleValueDeducedMatcher<Matcher, T1, T2>& v)
+    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const goospimpl::MultipleValueDeducedMatcher<Matcher, T1, T2>& v)
     {
-        params.push_back(goospimpl::MatcherHolder2::create<Matcher, Convert, Convert>(v.m_v1, v.m_v2));
+        params.push_back(goospimpl::MatcherHolder2::create<Matcher, typename goospimpl::remove_reference<Convert>::type, typename goospimpl::remove_reference<Convert>::type>(v.m_v1, v.m_v2));
     }
 };
+
+template<>
+void Params::addDeducedParameter<const char*, goospimpl::EqualsMatcher2, const char*>(std::vector<goospimpl::MatcherHolder2>& params, const goospimpl::SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, const char*>& v)
+{
+    params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, std::string>(v.m_value));
+}
 
 struct A
 {
@@ -89,18 +68,6 @@ bool operator==(const B& lhs, const B& rhs)
     return lhs.m_value == rhs.m_value;
 }
 
-template <typename U, typename EpsilonType>
-MultipleValueDeducedMatcher<goospimpl::EqualsWithEpsilonMatcher2,U,EpsilonType> equal(const U& v, const EpsilonType& e)
-{
-    return MultipleValueDeducedMatcher<goospimpl::EqualsWithEpsilonMatcher2, U,EpsilonType>(v, e);
-}
-
-template <typename U>
-SingleValueDeducedMatcher<goospimpl::EqualsMatcher2,U> equal(const U& v)
-{
-    return SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, U>(v);
-}
-
 #ifdef XXX
 #if __cplusplus >= 201103
 #define STATIC_ASSERT_PTR_NOT_SUPPORTED(b) static_assert(b,"Pointer types cannot be compared for equality - use pointer<> template to compare pointers")
@@ -118,36 +85,14 @@ struct pointer_equality_not_supported<true>
 #endif
 
 
-template <typename U>
-SingleValueDeducedMatcher<goospimpl::EqualsMatcher2,U*> equal(U* v)
-{
-    //STATIC_ASSERT_PTR_NOT_SUPPORTED(false);
-    return SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, U*>(v);
-}
-
-template <typename T1, typename T2>
-MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1,T2> between(const T1& lower, const T2& upper)
-{
-    return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1,T2>(lower, upper);
-}
-
-template <typename T1, typename T2>
-MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1*,T2*> between(T1* lower, T2* upper)
-{
-    return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1*,T2*>(lower, upper);
-}
-
-template <typename DeducedMatcher>
-DeducedMatcher with(const DeducedMatcher& m)
-{
-    return m;
-}
-
 TEST_CASE("With/1","")
 {
     using goospimpl::MatcherHolder2;
     using goospimpl::ValueHolder;
     std::vector<goospimpl::MatcherHolder2> paramsVector;
+    using goospimpl::with;
+    using goospimpl::equal;
+    using goospimpl::between;
 
     Params p;
     p.addDeducedParameter<double>(paramsVector, 3);
@@ -230,6 +175,7 @@ TEST_CASE("strings","")
     using goospimpl::MatcherHolder2;
     using goospimpl::ValueHolder;
     std::vector<goospimpl::MatcherHolder2> paramsVector;
+    using goospimpl::equal;
 
     Params p;
     p.addDeducedParameter<const char*>(paramsVector, equal("The quick brown fox"));
@@ -238,6 +184,8 @@ TEST_CASE("strings","")
 
 TEST_CASE("arrays","")
 {
+    using goospimpl::between;
+    using goospimpl::equal;
     int values[] = {0,1,2};
     equal(values);
 
@@ -246,10 +194,71 @@ TEST_CASE("arrays","")
     std::vector<goospimpl::MatcherHolder2> paramsVector;
 
     Params p;
-    p.addDeducedParameter<int * const>(paramsVector, equal(values));
+    p.addDeducedParameter<int *>(paramsVector, equal(values));
     REQUIRE(paramsVector[0].matches(ValueHolder(values)));
     paramsVector.clear();
 
-    p.addDeducedParameter<int* const>(paramsVector, between(values, values + 2));
+    p.addDeducedParameter<int*>(paramsVector, between(values, values + 2));
     REQUIRE(paramsVector[0].matches(ValueHolder(values + 1)));
+}
+
+namespace UnitTest
+{
+    class TestObject
+    {
+    public:
+        TestObject()
+            : m_str("fred"), m_value(27)
+        {}
+        bool matches(const TestObject& rhs) const
+        {
+            return (m_str == rhs.m_str &&
+                m_value == rhs.m_value);
+        }
+        // Requirements: must be copy constructable
+        TestObject(const TestObject& rhs)
+            : m_str(rhs.m_str), m_value(rhs.m_value)
+        {
+        }
+        // Requirements: must be (output) streamable
+        void print(std::ostream& os) const
+        {
+            os << m_str << ", " << m_value;
+        }
+    private:
+        // not assignable
+        TestObject& operator=(const TestObject& rhs);
+
+        std::string m_str;
+        int m_value;
+    };
+
+    bool operator==(const TestObject& lhs, const TestObject& rhs)
+    {
+        return lhs.matches(rhs);
+    }
+    std::ostream& operator<<(std::ostream& os, const TestObject& rhs)
+    {
+        rhs.print(os);
+        return os;
+    }
+}
+
+TEST_CASE("objects","")
+{
+    UnitTest::TestObject t;
+    using goospimpl::MatcherHolder2;
+    using goospimpl::ValueHolder;
+    using goospimpl::equal;
+
+    std::vector<goospimpl::MatcherHolder2> paramsVector;
+
+    Params p;
+    p.addDeducedParameter<const UnitTest::TestObject&>(paramsVector, equal(t));
+    REQUIRE(paramsVector[0].matches(ValueHolder(t)));
+    paramsVector.clear();
+
+    p.addDeducedParameter<const UnitTest::TestObject&>(paramsVector, with(equal(t)));
+    REQUIRE(paramsVector[0].matches(ValueHolder(t)));
+    paramsVector.clear();
 }
