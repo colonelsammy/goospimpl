@@ -7,35 +7,37 @@
 #define GOOS_PIMPL_ANY_VALUE_OF_ANY_TYPE_MATCHER_HPP
 
 #include "description.hpp"
-#include "matcher.hpp"
+#include "value_holder.hpp"
 #include <stdexcept>
 
 namespace goospimpl
 {
-    /*struct AnyValueOfAnyTypeMatcher : public CountedContent<MatcherContent>
+    template <typename T>
+    class AnyValueOfAnyTypeMatcher
     {
+        typedef T ValueType;
     public:
-        typedef void ValueType;
         AnyValueOfAnyTypeMatcher()
         {}
-        virtual const std::type_info & type() const
+        template <typename U>
+        bool matches(const U&) const
         {
-            return typeid(void);
+            return true;
         }
-        virtual void describe_to(Description& desc) const
+        bool matchesType(const ValueHolder&) const
         {
-            desc.appendText("value of any type ");
+            return true;
         }
-        virtual void describe_mismatch(const ValueHolder&, Description&) const
+        void describe_to(goospimpl::Description& desc) const
+        {
+            desc.appendText("value of any type");
+        }
+        void describe_mismatch(const ValueType&, goospimpl::Description&) const
         {
             // should never be called as should never fail
             throw std::runtime_error("describe_mismatch called for type anything (should never fail)");
         }
-        virtual bool operator()(const ValueHolder&) const
-        {
-            return true;
-        }
-    };*/
+    };
 }
 
 #endif

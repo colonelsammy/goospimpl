@@ -151,33 +151,33 @@ namespace goospimpl
     };
 
     template <typename U, typename EpsilonType>
-    MultipleValueDeducedMatcher<goospimpl::EqualsWithEpsilonMatcher2,U,EpsilonType> equal(const U& v, const EpsilonType& e)
+    MultipleValueDeducedMatcher<goospimpl::EqualsWithEpsilonMatcher,U,EpsilonType> equal(const U& v, const EpsilonType& e)
     {
-        return MultipleValueDeducedMatcher<EqualsWithEpsilonMatcher2, U,EpsilonType>(v, e);
+        return MultipleValueDeducedMatcher<EqualsWithEpsilonMatcher, U,EpsilonType>(v, e);
     }
 
     template <typename U>
-    SingleValueDeducedMatcher<EqualsMatcher2,U> equal(const U& v)
+    SingleValueDeducedMatcher<EqualsMatcher,U> equal(const U& v)
     {
-        return SingleValueDeducedMatcher<EqualsMatcher2, U>(v);
+        return SingleValueDeducedMatcher<EqualsMatcher, U>(v);
     }
 
     template <typename U>
-    SingleValueDeducedMatcher<goospimpl::EqualsMatcher2,U*> equal(U* v)
+    SingleValueDeducedMatcher<goospimpl::EqualsMatcher,U*> equal(U* v)
     {
-        return SingleValueDeducedMatcher<EqualsMatcher2, U*>(v);
+        return SingleValueDeducedMatcher<EqualsMatcher, U*>(v);
     }
 
     template <typename T1, typename T2>
-    MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1,T2> between(const T1& lower, const T2& upper)
+    MultipleValueDeducedMatcher<goospimpl::BetweenMatcher,T1,T2> between(const T1& lower, const T2& upper)
     {
-        return MultipleValueDeducedMatcher<BetweenMatcher2,T1,T2>(lower, upper);
+        return MultipleValueDeducedMatcher<BetweenMatcher,T1,T2>(lower, upper);
     }
 
     template <typename T1, typename T2>
-    MultipleValueDeducedMatcher<BetweenMatcher2,T1*,T2*> between(T1* lower, T2* upper)
+    MultipleValueDeducedMatcher<BetweenMatcher,T1*,T2*> between(T1* lower, T2* upper)
     {
-        return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher2,T1*,T2*>(lower, upper);
+        return MultipleValueDeducedMatcher<goospimpl::BetweenMatcher,T1*,T2*>(lower, upper);
     }
 
     template <typename DeducedMatcher>

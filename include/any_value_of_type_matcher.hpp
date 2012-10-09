@@ -7,40 +7,37 @@
 #define GOOS_PIMPL_ANY_VALUE_OF_TYPE_MATCHER_HPP
 
 #include "description.hpp"
-#include "matcher.hpp"
+#include <typeinfo>
+#include <stdexcept>
 
 namespace goospimpl
 {
-    /*template <typename T>
-    struct AnyValueOfTypeMatcher : public CountedContent<MatcherContent>
+    template <typename T>
+    class AnyValueOfTypeMatcher
     {
-    public:
         typedef T ValueType;
-        typedef ValueType MatchParameterType;
+    public:
         AnyValueOfTypeMatcher()
         {}
-        virtual const std::type_info & type() const
+        bool matches(const ValueType& v) const
         {
-            return typeid(ValueType);
+            return true;
         }
-        virtual void describe_to(Description& desc) const
+        template <typename U>
+        bool matches(const U& v) const
+        {
+            return false;
+        }
+        void describe_to(goospimpl::Description& desc) const
         {
             desc.appendText("value of type ").appendText(typeid(ValueType).name());
         }
-        virtual void describe_mismatch(const ValueHolder& v, Description& mismatch_desc) const
+        void describe_mismatch(const ValueType& v, goospimpl::Description& mismatch_desc) const
         {
-            mismatch_desc.appendText("was of type ").appendValue(v.type().name());
+            // should never be called as should fail on type at higher level
+            throw std::runtime_error("describe_mismatch called for type any (should never fail)");
         }
-        virtual bool operator()(const ValueHolder& v) const
-        {
-            return (type() == v.type());
-        }
-        template <typename U>
-        MatcherContent* clone_with_new_type() const
-        {
-            return new AnyValueOfTypeMatcher<U>();
-        }
-    };*/
+    };
 }
 
 #endif

@@ -6,7 +6,7 @@
 #ifndef GOOS_PIMPL_VALUE_HOLDER_HPP
 #define GOOS_PIMPL_VALUE_HOLDER_HPP
 
-//#include <string>
+#include <string>
 #include <typeinfo>
 
 namespace goospimpl
@@ -104,13 +104,16 @@ struct conversion_from_char_array_not_supported<const char*>;
     public:
         class BadHolderCast : public std::bad_cast
         {
+            friend class goospimpl::ValueHolder;
         public:
             virtual const char * what() const throw()
             {
                 return "Attempt get a value of different type from ValueHolder";
             }
+        private:
+            BadHolderCast() {}
         };
-    public:
+
         ValueHolder()
             : m_content(NULL)
         {}

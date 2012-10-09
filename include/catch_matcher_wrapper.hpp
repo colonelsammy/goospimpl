@@ -7,70 +7,87 @@
 #define GOOS_PIMPL_CATCH_MATCHER_WRAPPER_HPP
 
 #include "description.hpp"
-#include "matcher.hpp"
+#include "internal/catch_matchers.hpp"
 
 namespace goospimpl
 {
-    template <typename T>
-    struct CatchMatcher : public CountedContent<MatcherContent>
+    template <typename T, typename Matcher>
+    struct CatchMatcher
     {
     public:
-        typedef std::string ValueType;
-        typedef std::string MatchParameterType;
+        typedef T ValueType;
         CatchMatcher()
         {}
-        explicit CatchMatcher(const MatchParameterType & value)
-            : expected(value)
+        explicit CatchMatcher(const ValueType & value)
+            : m_matcher(value)
         {
         }
-        virtual const std::type_info & type() const
-        {
-            return typeid(ValueType);
-        }
-        virtual void describe_to(goospimpl::Description& desc) const
+        void describe_to(goospimpl::Description& desc) const
         {
             std::ostringstream oss;
-            oss << expected;
+            oss << m_matcher;
             desc.appendText(oss.str());
         }
-        virtual void describe_mismatch(const ValueHolder& v, goospimpl::Description& mismatch_desc) const
+        void describe_mismatch(const ValueType& v, goospimpl::Description& mismatch_desc) const
         {
-            if( v.type() == typeid(ValueType) )
-            {
-                const ValueType& parameter = v.value<ValueType>();
-                mismatch_desc.appendText("was ").appendValue(parameter);
-            }
-            else
-            {
-                mismatch_desc.appendText("was of incompatible type '").appendText(v.type().name()).appendText("'");
-            }
+            mismatch_desc.appendText("was ").appendValue(v);
         }
-        virtual bool operator()(const ValueHolder& v) const
+        bool matches(const ValueType& v) const
         {
-            if( v.type() == typeid(ValueType) )
-            {
-                const ValueType& parameter = v.value<ValueType>();
-                return expected(parameter);
-            }
-            return false;
-        }
-
-        template <typename U>
-        MatcherContent* clone_with_new_type() const
-        {
-            return new CatchMatcher<U>(static_cast<U>(expected.m_substr));
+            return m_matcher(v);
         }
     private:
-        CatchMatcher(const CatchMatcher&);
-        CatchMatcher operator=(CatchMatcher);
 
-        T expected;
+        Matcher m_matcher;
     };
     
-    typedef CatchMatcher<Catch::Matchers::Impl::StdString::Equals> CatchEqualsMatcher;
-    typedef CatchMatcher<Catch::Matchers::Impl::StdString::Contains> ContainsMatcher;
-    typedef CatchMatcher<Catch::Matchers::Impl::StdString::StartsWith> StartsWithMatcher;
-    typedef CatchMatcher<Catch::Matchers::Impl::StdString::EndsWith> EndsWithMatcher;
+    template <typename T> struct ContainsMatcher;
+
+    template <>
+    class ContainsMatcher<std::string> : public CatchMatcher<std::string, Catch::Matchers::Impl::StdString::Contains>
+    {
+    public:
+        explicit ContainsMatcher(const std::string& value)
+            : CatchMatcher(value)
+        {
+        }
+        bool matches(const ValueType& v) const
+        {
+            return CatchMatcher::matches(v);
+        }
+    };
+
+    template <typename T> struct StartsWithMatcher;
+
+    template <>
+    class StartsWithMatcher<std::string> : public CatchMatcher<std::string, Catch::Matchers::Impl::StdString::StartsWith>
+    {
+    public:
+        explicit StartsWithMatcher(const std::string& value)
+            : CatchMatcher(value)
+        {
+        }
+        bool matches(const ValueType& v) const
+        {
+            return CatchMatcher::matches(v);
+        }
+    };
+
+    template <typename T> struct EndsWithMatcher;
+
+    template <>
+    class EndsWithMatcher<std::string> : public CatchMatcher<std::string, Catch::Matchers::Impl::StdString::EndsWith>
+    {
+    public:
+        explicit EndsWithMatcher(const std::string& value)
+            : CatchMatcher(value)
+        {
+        }
+        bool matches(const ValueType& v) const
+        {
+            return CatchMatcher::matches(v);
+        }
+    };
 }
 
 #endif

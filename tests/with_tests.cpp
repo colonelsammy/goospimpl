@@ -18,26 +18,26 @@ namespace
 struct Params
 {
     template<typename Convert, typename T>
-    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const T& v)
+    void addDeducedParameter(std::vector<goospimpl::MatcherHolder>& params, const T& v)
     {
-        params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, typename goospimpl::remove_reference<Convert>::type>(v));
+        params.push_back(goospimpl::MatcherHolder::create<goospimpl::EqualsMatcher, typename goospimpl::remove_reference<Convert>::type>(v));
     }
     template<typename Convert, template <typename> class Matcher, typename U>
-    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const goospimpl::SingleValueDeducedMatcher<Matcher, U>& v)
+    void addDeducedParameter(std::vector<goospimpl::MatcherHolder>& params, const goospimpl::SingleValueDeducedMatcher<Matcher, U>& v)
     {
-        params.push_back(goospimpl::MatcherHolder2::create<Matcher, typename goospimpl::remove_reference<Convert>::type>(v.m_value));
+        params.push_back(goospimpl::MatcherHolder::create<Matcher, typename goospimpl::remove_reference<Convert>::type>(v.m_value));
     }
     template<typename Convert, template <typename, typename> class Matcher, typename T1, typename T2>
-    void addDeducedParameter(std::vector<goospimpl::MatcherHolder2>& params, const goospimpl::MultipleValueDeducedMatcher<Matcher, T1, T2>& v)
+    void addDeducedParameter(std::vector<goospimpl::MatcherHolder>& params, const goospimpl::MultipleValueDeducedMatcher<Matcher, T1, T2>& v)
     {
-        params.push_back(goospimpl::MatcherHolder2::create<Matcher, typename goospimpl::remove_reference<Convert>::type, typename goospimpl::remove_reference<Convert>::type>(v.m_v1, v.m_v2));
+        params.push_back(goospimpl::MatcherHolder::create<Matcher, typename goospimpl::remove_reference<Convert>::type, typename goospimpl::remove_reference<Convert>::type>(v.m_v1, v.m_v2));
     }
 };
 
 template<>
-void Params::addDeducedParameter<const char*, goospimpl::EqualsMatcher2, const char*>(std::vector<goospimpl::MatcherHolder2>& params, const goospimpl::SingleValueDeducedMatcher<goospimpl::EqualsMatcher2, const char*>& v)
+void Params::addDeducedParameter<const char*, goospimpl::EqualsMatcher, const char*>(std::vector<goospimpl::MatcherHolder>& params, const goospimpl::SingleValueDeducedMatcher<goospimpl::EqualsMatcher, const char*>& v)
 {
-    params.push_back(goospimpl::MatcherHolder2::create<goospimpl::EqualsMatcher2, std::string>(v.m_value));
+    params.push_back(goospimpl::MatcherHolder::create<goospimpl::EqualsMatcher, std::string>(v.m_value));
 }
 
 struct A
@@ -87,9 +87,9 @@ struct pointer_equality_not_supported<true>
 
 TEST_CASE("With/1","")
 {
-    using goospimpl::MatcherHolder2;
+    using goospimpl::MatcherHolder;
     using goospimpl::ValueHolder;
-    std::vector<goospimpl::MatcherHolder2> paramsVector;
+    std::vector<goospimpl::MatcherHolder> paramsVector;
     using goospimpl::with;
     using goospimpl::equal;
     using goospimpl::between;
@@ -172,9 +172,9 @@ TEST_CASE("With/1","")
 
 TEST_CASE("strings","")
 {
-    using goospimpl::MatcherHolder2;
+    using goospimpl::MatcherHolder;
     using goospimpl::ValueHolder;
-    std::vector<goospimpl::MatcherHolder2> paramsVector;
+    std::vector<goospimpl::MatcherHolder> paramsVector;
     using goospimpl::equal;
 
     Params p;
@@ -189,9 +189,9 @@ TEST_CASE("arrays","")
     int values[] = {0,1,2};
     equal(values);
 
-    using goospimpl::MatcherHolder2;
+    using goospimpl::MatcherHolder;
     using goospimpl::ValueHolder;
-    std::vector<goospimpl::MatcherHolder2> paramsVector;
+    std::vector<goospimpl::MatcherHolder> paramsVector;
 
     Params p;
     p.addDeducedParameter<int *>(paramsVector, equal(values));
@@ -247,11 +247,11 @@ namespace UnitTest
 TEST_CASE("objects","")
 {
     UnitTest::TestObject t;
-    using goospimpl::MatcherHolder2;
+    using goospimpl::MatcherHolder;
     using goospimpl::ValueHolder;
     using goospimpl::equal;
 
-    std::vector<goospimpl::MatcherHolder2> paramsVector;
+    std::vector<goospimpl::MatcherHolder> paramsVector;
 
     Params p;
     p.addDeducedParameter<const UnitTest::TestObject&>(paramsVector, equal(t));

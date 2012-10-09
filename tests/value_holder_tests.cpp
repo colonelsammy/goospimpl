@@ -179,6 +179,7 @@ void addReference(const UnitTest::TestValueObject& v, T t)
     ValueHolder* pv = new ValueHolder(v);
     T vt = pv->value<T>();
     REQUIRE(vt == t);
+    delete pv;
 }
 
 template <typename T>
@@ -196,10 +197,11 @@ void addRvalueReference(const UnitTest::TestValueObject&& v, T t)
     ValueHolder* pv = new ValueHolder(v);
     T vt = pv->value<T>();
     REQUIRE(vt == t);
+    delete pv;
 }
 #endif
 
-TEST_CASE("ValueHolder/Check object handling","check that objects of different types can be constructed")
+TEST_CASE("ValueHolder/Check object handling","check that objects can be constructed by value and by reference")
 {
     UnitTest::TestValueObject t;
     addReference<UnitTest::TestValueObject>(t, t);
@@ -210,4 +212,34 @@ TEST_CASE("ValueHolder/Check object handling","check that objects of different t
     addRvalueReference<const UnitTest::TestValueObject>(createRef<UnitTest::TestValueObject>(), t);
     addRvalueReference<const UnitTest::TestValueObject&>(createRef<UnitTest::TestValueObject>(), t);
 #endif
+}
+
+template <typename T>
+void addPointer(const UnitTest::TestValueObject* v, T* t)
+{
+    using goospimpl::ValueHolder;
+    ValueHolder* pv = new ValueHolder(v);
+    const T* vt = pv->value<const T*>();
+    REQUIRE(vt == t);
+    delete pv;
+}
+
+template <typename T>
+void addConstPointer(const UnitTest::TestValueObject* const v, T* t)
+{
+    using goospimpl::ValueHolder;
+    ValueHolder* pv = new ValueHolder(v);
+    const T* vt = pv->value<const T*>();
+    REQUIRE(vt == t);
+    delete pv;
+}
+
+TEST_CASE("ValueHolder/Check pointer","check that pointers can be stored and returned")
+{
+    UnitTest::TestValueObject* t = new UnitTest::TestValueObject();
+    addPointer<UnitTest::TestValueObject>(t, t);
+    addPointer<const UnitTest::TestValueObject>(t, t);
+    addConstPointer<UnitTest::TestValueObject>(t, t);
+    addConstPointer<const UnitTest::TestValueObject>(t, t);
+    delete t;
 }
