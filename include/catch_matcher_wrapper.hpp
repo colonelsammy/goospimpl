@@ -24,9 +24,7 @@ namespace goospimpl
         }
         void describe_to(goospimpl::Description& desc) const
         {
-            std::ostringstream oss;
-            oss << m_matcher;
-            desc.appendText(oss.str());
+            desc.appendText(m_matcher.toString());
         }
         void describe_mismatch(const ValueType& v, goospimpl::Description& mismatch_desc) const
         {
@@ -34,7 +32,7 @@ namespace goospimpl
         }
         bool matches(const ValueType& v) const
         {
-            return m_matcher(v);
+            return m_matcher.match(v);
         }
     private:
 
