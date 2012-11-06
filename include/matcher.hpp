@@ -17,7 +17,7 @@ namespace goospimpl
 
     struct CloneableMatcher
     {
-        //virtual const std::type_info & type() const = 0;
+        virtual ~CloneableMatcher() {}
         virtual CloneableMatcher* clone() const = 0;
         virtual void describe_to(goospimpl::Description& desc) const = 0;
         virtual void describe_mismatch(const ValueHolder& v, goospimpl::Description& mismatch_desc) const = 0;

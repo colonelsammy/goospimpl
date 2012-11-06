@@ -34,12 +34,13 @@ namespace goospimpl
     private:
         std::string m_text;
     };
-}
 
-inline std::ostream& operator<<(std::ostream& os, const goospimpl::Description& d)
-{
-    d.print(os);
-    return os;
+    inline std::ostream& operator<<(std::ostream& os, const Description& d)
+    {
+        d.print(os);
+        return os;
+    }
+
 }
 
 #endif
