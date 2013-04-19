@@ -7,7 +7,7 @@
 #define GOOS_PIMPL_HPP
 
 //#define GOOS_PIMPL_INTERNAL_FAIL_MSG( msg ) INTERNAL_CATCH_MSG( msg, Catch::ResultWas::ExplicitFailure, false, "FAIL" )
-#define GOOS_PIMPL_INTERNAL_FAIL_MSG( msg ) INTERNAL_CATCH_MSG( msg, Catch::ResultWas::Info, false, "INFO" )
+#define GOOS_PIMPL_INTERNAL_FAIL_MSG( msg ) INTERNAL_CATCH_MSG( msg, Catch::ResultWas::Warning, Catch::ResultDisposition::ContinueOnFailure, "WARN" )
 
 #include "mock_class.hpp"
 #include "mockery.hpp"

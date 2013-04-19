@@ -42,6 +42,7 @@ namespace goospimpl
             expectations.push_back(rhs.expectation);
             return *this;
         }
+        // Sequence
         Expectations& operator,(const inSequence& rhs)
         {
             if( !expectations.empty() )
@@ -52,6 +53,7 @@ namespace goospimpl
             }
             return *this;
         }
+        // State
         Expectations& operator,(const then& rhs)
         {
             if( !expectations.empty() )
@@ -68,6 +70,7 @@ namespace goospimpl
             }
             return *this;
         }
+        // Actions
         Expectations& operator,(const will& rhs)
         {
             if( !expectations.empty() )
