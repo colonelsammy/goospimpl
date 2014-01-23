@@ -79,6 +79,7 @@
     <ClCompile Include="..\..\any_value_of_any_type_matcher_tests.cpp" />
     <ClCompile Include="..\..\any_value_of_type_matcher_tests.cpp" />
     <ClCompile Include="..\..\between_matcher_tests.cpp" />
+    <ClCompile Include="..\..\end_to_end_test.cpp" />
     <ClCompile Include="..\..\equals_with_epsilon_matcher_tests.cpp" />
     <ClCompile Include="..\..\matcher_tests.cpp" />
     <ClCompile Include="..\..\counted_object_tests.cpp" />

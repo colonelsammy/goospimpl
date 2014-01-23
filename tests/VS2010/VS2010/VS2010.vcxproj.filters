@@ -45,6 +45,9 @@
     <ClCompile Include="..\..\any_value_of_any_type_matcher_tests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\end_to_end_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\makefile">

@@ -2,6 +2,7 @@ CC=g++
 CFLAGS=-c -Wall -I../../Catch/include -I../include
 LDFLAGS=
 SOURCES=main.cpp \
+    end_to_end_test.cpp \
     any_value_of_any_type_matcher_tests.cpp \
     any_value_of_type_matcher_tests.cpp \
     between_matcher_tests.cpp \
