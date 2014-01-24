@@ -1,4 +1,5 @@
 #include "catch.hpp"
+//#include "any_facade.hpp"
 
 template <typename T>
 class Mock;
@@ -33,8 +34,22 @@ template <typename T>
 struct action
 {
     action(const T& t)
-        : v(t)
+        : ty(0), v(t)
     {}
+    action(int x, const T& t)
+        : ty(x), v(t)
+    {}
+    T invoke() const
+    {
+        if( ty ) throw std::runtime_error("action throw");
+        return v;
+    }
+    template <typename U>
+    action(const action<U>& rhs)
+        : ty(rhs.ty), v(ty ? T() : rhs.v)
+    {
+    }
+    int ty;
     T v;
 };
 
@@ -42,6 +57,12 @@ template <typename T>
 action<T> returnValue(const T& v)
 {
     return action<T>(v);
+}
+
+template <typename T>
+action<T> throwException(const T& t)
+{
+    return action<T>(1,t);
 }
 
 class MockInterface
@@ -57,175 +78,117 @@ class Mock : public Interface
     friend class Mockery;
 public:
     Mock()
-        : m_expectations(self()), m_expected(0)
     {}
+
     template <typename T>
     class MethodExpectation
     {
+        friend class Mock;
     public:
         MethodExpectation()
             : m_expected(0)
         {}
         template <typename U>
-        MethodExpectation& will(const U& action)
+        MethodExpectation& operator,(U& rhs)
         {
-            std::vector<U> a;
-            a.push_back(action);
+            return rhs;
+        }
+        template <typename U>
+        MethodExpectation& operator,(const std::vector<action<U> >& rhs)
+        {
+            for( typename std::vector<action<U> >::const_iterator it = rhs.begin(); it != rhs.end(); ++it )
+            {
+                m_actions.push_back(*it);
+            }
             return *this;
         }
         template <typename U>
-        MethodExpectation& WillOnce(const U& action)
+        MethodExpectation& will(const action<U>& a)
         {
-            std::vector<U> a;
-            a.push_back(action);
+            m_actions.push_back(a);
             return *this;
         }
-        MethodExpectation<T>& Times(int count)
+        template <typename U>
+        MethodExpectation& WillOnce(const action<U>& a)
+        {
+            m_actions.push_back(a);
+            return *this;
+        }
+        MethodExpectation& Times(int count)
         {
             m_expected = count;
             return *this;
         }
     private:
-        Expectations& m_obj;
         int m_expected;
-    };
-    class Expectations
-    {
-    public:
-        template <typename T>
-        class MethodExpectation
-        {
-            friend class Expectations;
-        public:
-            MethodExpectation(Expectations& e)
-                : m_obj(e)
-            {}
-            template <typename U>
-            Expectations& operator,(const std::vector<action<U> >& rhs)
-            {
-                for( typename std::vector<action<U> >::const_iterator it = rhs.begin(); it != rhs.end(); ++it )
-                {
-                    m_obj.m_obj.m_actions.push_back(action<T>(it->v));
-                }
-                return m_obj;
-            }
-            template <typename U>
-            Expectations& will(const U& action)
-            {
-                std::vector<U> a;
-                a.push_back(action);
-                return operator,(a);
-            }
-            template <typename U>
-            Expectations& WillOnce(const U& action)
-            {
-                std::vector<U> a;
-                a.push_back(action);
-                return operator,(a);
-            }
-            MethodExpectation<T>& Times(int count)
-            {
-                m_obj.m_obj.m_expected = count;
-                return *this;
-            }
-        private:
-            Expectations& m_obj;
-        };
-    public:
-        Expectations(Mock& m)
-            : m_obj(m)
-        {}
-        MethodExpectation<int> foo(int v)
-        {
-            m_obj.m_v.push_back(v);
-            return MethodExpectation<int>(*this);
-        }
-        template <typename U>
-        Expectations& operator,(MethodExpectation<U>& rhs)
-        {
-            return rhs.m_obj;
-        }
-        template <typename T>
-        Expectations& operator,(T& rhs)
-        {
-            return rhs;
-        }
-        template <typename T>
-        Expectations& operator,(const std::vector<action<T> >& rhs)
-        {
-            m_obj.m_actions = rhs;
-            return *this;
-        }
-        template <typename T>
-        Expectations& Returns(const T& t)
-        {
-            return *this;
-        }
-    private:
-        Mock& m_obj;
+        std::vector<int> m_v;
+        std::vector<action<int> > m_actions;
     };
     class Cardinality
     {
     public:
-        Cardinality(int c)
-            : m_count(c)
+        Cardinality(Mock& obj, int c)
+            : m_obj(obj), m_count(c)
         {}
-        Expectations::MethodExpectation<int>& foo(int v)
+        MethodExpectation<int>& foo(int v)
         {
-            return m_expect1_foo.addMethod();
+            MethodExpectation<int>& result = m_obj.m_expect1_foo.appendMethod();
+            result.m_expected = m_count;
+            result.m_v.push_back(v);
+            return result;
         }
     private:
+        Mock& m_obj;
         int m_count;
     };
-    Expectations& expect(int count)
+    class Expectation
     {
-        m_expected = count;
-        return m_expectations;
-    }
+    public:
+        Expectation(Mock& obj)
+            : m_obj(obj)
+        {}
+        MethodExpectation<int>& foo(int v)
+        {
+            MethodExpectation<int>& result = m_obj.m_expect1_foo.appendMethod();
+            result.m_v.push_back(v);
+            return result;
+        }
+    private:
+        Mock& m_obj;
+    };
 
     template <typename R>
     class MethodExpectations
     {
+        friend class Mock;
     public:
-        typename Expectations::MethodExpectation<R>& addMethod()
+        MethodExpectation<R>& appendMethod()
         {
-            Expectations::MethodExpectation<R> > tmp;
+            MethodExpectation<R> tmp;
             m_expectations.push_back(tmp);
             return m_expectations.back();
         }
     private:
-        std::vector<typename Expectations::MethodExpectation<R> > m_expectations;
+        std::vector<MethodExpectation<R> > m_expectations;
     };
     
     // MOCK_METHOD1(foo, int(int));
 public:
     virtual int foo(int v)
     {
-        assert(v == m_v[0]);
-        return m_actions[0].v;
+        assert(v == m_expect1_foo.m_expectations[0].m_v[0]);
+        return m_expect1_foo.m_expectations[0].m_actions[0].invoke();
     }
 private:
     MethodExpectations<int> m_expect1_foo;
     //
-private:
-    // The only use of this method is safe...we are guaranteed that
-    // the Expectations will not use the Mock object in its constructor.
-    Mock& self()
-    {
-        return *this;
-    }
-
-    Expectations m_expectations;
-    int m_expected;
-    std::vector<int> m_v;
-    std::vector<action<int> > m_actions;
 };
 
 template <typename T>
-typename Mock<T>::Expectations oneOf(T& mock)
+typename Mock<T>::Cardinality oneOf(T& mock)
 {
     Mock<T>& t = dynamic_cast<Mock<T>&>(mock);
-    return t.expect(1);
+    return typename Mock<T>::Cardinality(t, 1);
 }
 
 template <typename T>
@@ -242,10 +205,10 @@ struct exactly
         : m_count(t)
     {}
     template <typename T>
-    typename Mock<T>::Expectations of(T& mock)
+    typename Mock<T>::Cardinality of(T& mock)
     {
         Mock<T>& t = dynamic_cast<Mock<T>&>(mock);
-        return t.expect(m_count);
+        return typename Mock<T>::Cardinality(t, m_count);
     }
     int m_count;
 };
@@ -294,6 +257,17 @@ TEST_CASE("End to end 'jMock' test")
         REQUIRE(mock1.foo(42) == 27);
         REQUIRE(mock2.foo(666) == 1);
     }
+
+    SECTION("Exception")
+    {
+        context.checking(
+                            (
+                                oneOf(mock1).foo(42).will(throwException(std::runtime_error("bar")))
+                            )
+                        );
+
+        REQUIRE_THROWS(mock1.foo(42));
+    }
 }
 
 // gmock.h
@@ -308,7 +282,7 @@ namespace testing
 }
 
 #define EXPECT_CALL(obj, call) \
-    Mock<MockInterface>::Expectations( obj ). call
+    Mock<MockInterface>::Expectation( obj ). call
 
 #define EXPECT_EQ( a, b ) \
     REQUIRE( (a) == (b) )
@@ -327,4 +301,3 @@ TEST_CASE("End to end 'gmock' test")
     EXPECT_EQ(mock1.foo(42), 27);
     EXPECT_EQ(mock2.foo(666), 1);
 }
-
